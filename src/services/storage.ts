@@ -1,7 +1,7 @@
 import { 
   User, VendorProfile, Product, RawMaterial, CartItem, Order, 
   ProductReview, VendorSettlement, VendorStatus, OrderStatus,
-  Coupon, Notification, AuditLog, UserTrustProfile, UserTrustEvent,
+  Coupon, CouponRedemption, Notification, AuditLog, AdminNote, UserTrustProfile, UserTrustEvent,
   PaymentAttempt, PaymentRecord, PaymentProviderEvent, Refund, RefundItem,
   WalletAccount, WalletTransaction, VendorSettlementItem, VendorPayoutAccount,
   PaymentAttemptProvider, PaymentAttemptStatus, RefundMethod, RefundStatus, PayoutMethod,
@@ -17,10 +17,14 @@ import {
   INITIAL_SHIPMENTS, INITIAL_SHIPMENT_EVENTS, INITIAL_WISHLIST, INITIAL_USER_STYLE_PROFILES
 } from '../data/mockData';
 import { createCuid } from '../utils/cuid';
+import { TrustService } from './trustService';
 
 const KEYS = {
   CURRENT_USER: 'artisan_market_current_user',
+  USERS: 'artisan_market_users',
   VENDORS: 'artisan_market_vendors',
+  VENDOR_STATUS_EVENTS: 'artisan_market_vendor_status_events',
+  ADMIN_NOTES: 'artisan_market_admin_notes',
   PRODUCTS: 'artisan_market_products',
   RAW_MATERIALS: 'artisan_market_raw_materials',
   WHOLESALE_CART: 'artisan_market_wholesale_cart',
@@ -34,6 +38,7 @@ const KEYS = {
   SETTLEMENTS: 'artisan_market_settlements',
   SETTLEMENT_ITEMS: 'artisan_market_settlement_items',
   COUPONS: 'artisan_market_coupons',
+  COUPON_REDEMPTIONS: 'artisan_market_coupon_redemptions',
   NOTIFICATIONS: 'artisan_market_notifications',
   AUDIT_LOGS: 'artisan_market_audit_logs',
   TRUST_PROFILES: 'artisan_market_trust_profiles',
@@ -63,6 +68,15 @@ class StorageService {
   private initDefaults() {
     if (!localStorage.getItem(KEYS.CURRENT_USER)) {
       localStorage.setItem(KEYS.CURRENT_USER, JSON.stringify(INITIAL_USERS[0]));
+    }
+    if (!localStorage.getItem(KEYS.USERS)) {
+      localStorage.setItem(KEYS.USERS, JSON.stringify(INITIAL_USERS));
+    }
+    if (!localStorage.getItem(KEYS.ADMIN_NOTES)) {
+      localStorage.setItem(KEYS.ADMIN_NOTES, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(KEYS.VENDOR_STATUS_EVENTS)) {
+      localStorage.setItem(KEYS.VENDOR_STATUS_EVENTS, JSON.stringify([]));
     }
     if (!localStorage.getItem(KEYS.VENDORS)) {
       localStorage.setItem(KEYS.VENDORS, JSON.stringify(INITIAL_VENDORS));
@@ -318,15 +332,68 @@ class StorageService {
     return newVendor;
   }
 
-  public updateVendorStatus(vendorId: string, status: VendorStatus, reason?: string) {
+  public updateVendorStatus(vendorId: string, status: VendorStatus, reason?: string, opts?: { publicMessage?: string; privateNote?: string }) {
     const vendors = this.getVendors();
     const vendor = vendors.find(v => v.id === vendorId);
     if (vendor) {
+      const prevStatus = vendor.status;
       vendor.status = status;
       if (reason) vendor.statusReason = reason;
       localStorage.setItem(KEYS.VENDORS, JSON.stringify(vendors));
+
+      if (opts?.privateNote) {
+        this.addAdminNote('vendor', vendorId, opts.privateNote);
+      }
+
+      this.addVendorStatusEvent(vendorId, prevStatus, status, reason || '', opts?.publicMessage, opts?.privateNote);
+
+      this.addAuditLog(`vendor_${status}`, reason || `Vendor status changed to ${status}`, 'vendor', vendorId, {
+        publicMessage: opts?.publicMessage || `Vendor application ${status}`,
+        privateNote: opts?.privateNote
+      });
+
+      this.sendNotification(vendor.ownerUserId, 'vendor_status', `Vendor Account ${status.toUpperCase()}`, opts?.publicMessage || `Your vendor account status has been updated to ${status}.`);
       this.notify();
     }
+  }
+
+  public approveVendor(vendorId: string, note?: string) {
+    this.updateVendorStatus(vendorId, 'approved', 'Vendor credentials and application verified', {
+      publicMessage: 'Congratulations! Your vendor profile has been approved and published.',
+      privateNote: note
+    });
+  }
+
+  public rejectVendor(vendorId: string, reason: string, privateNote?: string) {
+    if (!reason || !reason.trim()) {
+      throw new Error('A reason is strictly required for vendor rejection.');
+    }
+    // Sanitised public message for seller visibility
+    const publicMsg = `Your vendor application requires revision: ${reason.trim()}`;
+    this.updateVendorStatus(vendorId, 'rejected', reason, {
+      publicMessage: publicMsg,
+      privateNote
+    });
+  }
+
+  public suspendVendor(vendorId: string, reason: string, privateNote?: string) {
+    if (!reason || !reason.trim()) {
+      throw new Error('A reason is strictly required for vendor suspension.');
+    }
+    this.updateVendorStatus(vendorId, 'suspended', reason, {
+      publicMessage: `Storefront temporarily suspended by administration: ${reason.trim()}`,
+      privateNote
+    });
+  }
+
+  public reapproveVendor(vendorId: string, reason: string, privateNote?: string) {
+    if (!reason || !reason.trim()) {
+      throw new Error('A reason is strictly required for vendor reapproval.');
+    }
+    this.updateVendorStatus(vendorId, 'approved', reason, {
+      publicMessage: 'Your vendor account has been re-approved and un-suspended.',
+      privateNote
+    });
   }
 
   // --- PRODUCTS ---
@@ -350,6 +417,118 @@ class StorageService {
     localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(products));
     this.notify();
     return newProduct;
+  }
+
+  public updateProduct(id: string, updates: Partial<Product>): Product | undefined {
+    const products = this.getProducts();
+    const idx = products.findIndex(p => p.id === id);
+    if (idx === -1) return undefined;
+    products[idx] = {
+      ...products[idx],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(products));
+    this.notify();
+    return products[idx];
+  }
+
+  public approveProduct(productId: string, note?: string) {
+    const products = this.getProducts();
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      product.currentVersionId = product.latestVersionId || 'v1';
+      product.status = 'approved';
+      product.rejectionReason = undefined;
+      localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(products));
+
+      if (note) {
+        this.addAdminNote('product', productId, note);
+      }
+
+      this.addAuditLog('product_approved', 'Product version approved for catalog publication', 'product', productId, {
+        publicMessage: `Product '${product.title}' approved (Version ${product.currentVersionId}).`,
+        privateNote: note
+      });
+
+      const vendor = this.getVendors().find(v => v.id === product.vendorProfileId);
+      if (vendor) {
+        this.sendNotification(vendor.ownerUserId, 'product_approved', 'Product Approved', `Your product "${product.title}" has been approved and published to the catalog.`);
+      }
+
+      this.notify();
+    }
+  }
+
+  public rejectProduct(productId: string, reason: string, privateNote?: string) {
+    if (!reason || !reason.trim()) {
+      throw new Error('A reason is required for product rejection.');
+    }
+    const products = this.getProducts();
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      product.status = 'rejected';
+      product.rejectionReason = reason;
+      localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(products));
+
+      if (privateNote) {
+        this.addAdminNote('product', productId, privateNote);
+      }
+
+      this.addAuditLog('product_rejected', reason, 'product', productId, {
+        publicMessage: `Product rejected: ${reason}`,
+        privateNote
+      });
+
+      const vendor = this.getVendors().find(v => v.id === product.vendorProfileId);
+      if (vendor) {
+        this.sendNotification(vendor.ownerUserId, 'product_rejected', 'Product Rejection Notice', `Your product "${product.title}" was rejected. Reason: ${reason}`);
+      }
+
+      this.notify();
+    }
+  }
+
+  public requestProductChanges(productId: string, reason: string, privateNote?: string) {
+    if (!reason || !reason.trim()) {
+      throw new Error('A reason is required to request changes on a product.');
+    }
+    const products = this.getProducts();
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      product.status = 'pending';
+      product.rejectionReason = `Changes requested: ${reason}`;
+      localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(products));
+
+      if (privateNote) {
+        this.addAdminNote('product', productId, privateNote);
+      }
+
+      this.addAuditLog('product_changes_requested', reason, 'product', productId, {
+        publicMessage: `Changes requested on product: ${reason}`,
+        privateNote
+      });
+
+      const vendor = this.getVendors().find(v => v.id === product.vendorProfileId);
+      if (vendor) {
+        this.sendNotification(vendor.ownerUserId, 'system', 'Product Changes Requested', `Please revise "${product.title}". Feedback: ${reason}`);
+      }
+
+      this.notify();
+    }
+  }
+
+  public updateVendorProfile(vendorId: string, updates: Partial<VendorProfile>): VendorProfile | undefined {
+    const vendors = this.getVendors();
+    const idx = vendors.findIndex(v => v.id === vendorId);
+    if (idx === -1) return undefined;
+    vendors[idx] = {
+      ...vendors[idx],
+      ...updates
+    };
+    localStorage.setItem(KEYS.VENDORS, JSON.stringify(vendors));
+    this.notify();
+    return vendors[idx];
   }
 
   // --- RAW MATERIALS ---
@@ -622,6 +801,13 @@ class StorageService {
 
     orders.unshift(newOrder);
     localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
+
+    // Trust Event: First Purchase
+    const buyerPriorOrders = orders.filter(o => o.buyerUserId === user.id);
+    if (buyerPriorOrders.length === 1) {
+      TrustService.addEvent(user.id, 'first_purchase');
+    }
+
     this.clearCart();
     this.notify();
     return newOrder;
@@ -633,15 +819,26 @@ class StorageService {
     if (order) {
       const vOrder = order.vendorOrders.find(v => v.id === vendorOrderId);
       if (vOrder) {
+        const prevStatus = vOrder.status;
         vOrder.status = status;
         if (trackingNumber) vOrder.trackingNumber = trackingNumber;
         
         // Derive master order status
         const allStatus = order.vendorOrders.map(v => v.status);
         if (allStatus.every(s => s === 'delivered')) {
-          order.status = 'delivered';
+          if (order.status !== 'delivered') {
+            order.status = 'delivered';
+            // Trigger Trust Event for delivered order
+            TrustService.addEvent(order.buyerUserId, 'order_delivered');
+            if (order.paymentMethod === 'cod') {
+              TrustService.addEvent(order.buyerUserId, 'cod_delivered');
+            }
+          }
         } else if (allStatus.some(s => s === 'shipped' || s === 'crafting')) {
           order.status = 'shipped';
+        } else if (status === 'cancelled' && prevStatus !== 'cancelled' && order.paymentMethod === 'cod') {
+          // COD Refused / Uncollected event
+          TrustService.addEvent(order.buyerUserId, 'cod_refused');
         }
 
         localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
@@ -676,47 +873,6 @@ class StorageService {
     return raw ? JSON.parse(raw) : [];
   }
 
-  // --- COUPONS ---
-  public getCoupons(): Coupon[] {
-    const raw = localStorage.getItem(KEYS.COUPONS);
-    return raw ? JSON.parse(raw) : INITIAL_COUPONS;
-  }
-
-  public validateCoupon(code: string, subtotalCents: number): { valid: boolean; discountCents: number; message: string; coupon?: Coupon } {
-    const coupons = this.getCoupons();
-    const coupon = coupons.find(c => c.code.toUpperCase() === code.trim().toUpperCase() && c.status === 'active');
-    
-    if (!coupon) {
-      return { valid: false, discountCents: 0, message: 'Invalid or expired coupon code.' };
-    }
-
-    if (coupon.rules.minOrderAmountCents && subtotalCents < coupon.rules.minOrderAmountCents) {
-      const minBdt = Math.round(coupon.rules.minOrderAmountCents / 100);
-      return { valid: false, discountCents: 0, message: `Coupon requires a minimum order of ৳${minBdt.toLocaleString()}.` };
-    }
-
-    let discountCents = 0;
-    if (coupon.rules.discountType === 'percentage') {
-      discountCents = Math.round((subtotalCents * coupon.rules.discountValue) / 100);
-      if (coupon.rules.maxDiscountCapCents && discountCents > coupon.rules.maxDiscountCapCents) {
-        discountCents = coupon.rules.maxDiscountCapCents;
-      }
-    } else {
-      discountCents = coupon.rules.discountValue;
-    }
-
-    if (discountCents > subtotalCents) {
-      discountCents = subtotalCents;
-    }
-
-    return {
-      valid: true,
-      discountCents,
-      message: `Coupon '${coupon.code}' applied! Saved ৳${Math.round(discountCents / 100).toLocaleString()}.`,
-      coupon
-    };
-  }
-
   public addCoupon(coupon: Omit<Coupon, 'id' | 'usageCount' | 'createdAt'>): Coupon {
     const coupons = this.getCoupons();
     const newCoupon: Coupon = {
@@ -738,7 +894,20 @@ class StorageService {
     return raw ? JSON.parse(raw) : INITIAL_AUDIT_LOGS;
   }
 
-  public addAuditLog(action: string, reason: string, entityType: AuditLog['entityType'], entityId: string) {
+  public addAuditLog(
+    action: string, 
+    reason: string, 
+    entityType: AuditLog['entityType'], 
+    entityId: string,
+    opts?: {
+      publicMessage?: string;
+      privateNote?: string;
+      metadata?: Record<string, any>;
+      ipAddress?: string;
+      userAgent?: string;
+      impersonatedUserId?: string;
+    }
+  ) {
     const user = this.getCurrentUser();
     const logs = this.getAuditLogs();
     const newLog: AuditLog = {
@@ -749,11 +918,138 @@ class StorageService {
       entityType,
       entityId,
       reason,
+      publicMessage: opts?.publicMessage,
+      privateNote: opts?.privateNote,
+      metadata: opts?.metadata,
+      ipAddress: opts?.ipAddress || '127.0.0.1 (Internal Admin Container)',
+      userAgent: opts?.userAgent || 'ArtisanMarket-AdminCenter/1.0',
+      impersonatedUserId: opts?.impersonatedUserId,
       createdAt: new Date().toISOString()
     };
     logs.unshift(newLog);
     localStorage.setItem(KEYS.AUDIT_LOGS, JSON.stringify(logs));
     this.notify();
+  }
+
+  // --- ADMIN NOTES ---
+  public getAdminNotes(entityType?: string, entityId?: string): AdminNote[] {
+    const raw = localStorage.getItem(KEYS.ADMIN_NOTES);
+    const notes: AdminNote[] = raw ? JSON.parse(raw) : [];
+    if (entityType && entityId) {
+      return notes.filter(n => n.entityType === entityType && n.entityId === entityId);
+    }
+    return notes;
+  }
+
+  public addAdminNote(entityType: AdminNote['entityType'], entityId: string, noteText: string): AdminNote {
+    const currentUser = this.getCurrentUser();
+    const notes = this.getAdminNotes();
+    const newNote: AdminNote = {
+      id: createCuid('anote_'),
+      entityType,
+      entityId,
+      adminUserId: currentUser.id,
+      adminEmail: currentUser.email,
+      note: noteText,
+      createdAt: new Date().toISOString()
+    };
+    notes.unshift(newNote);
+    localStorage.setItem(KEYS.ADMIN_NOTES, JSON.stringify(notes));
+    this.notify();
+    return newNote;
+  }
+
+  // --- VENDOR STATUS EVENTS ---
+  public getVendorStatusEvents(vendorProfileId?: string): any[] {
+    const raw = localStorage.getItem(KEYS.VENDOR_STATUS_EVENTS);
+    const events: any[] = raw ? JSON.parse(raw) : [];
+    return vendorProfileId ? events.filter(e => e.vendorProfileId === vendorProfileId) : events;
+  }
+
+  public addVendorStatusEvent(vendorProfileId: string, previousStatus: string, newStatus: string, reason: string, publicMessage?: string, privateNote?: string) {
+    const currentUser = this.getCurrentUser();
+    const events = this.getVendorStatusEvents();
+    const newEvt = {
+      id: createCuid('vse_'),
+      vendorProfileId,
+      actorUserId: currentUser.id,
+      previousStatus,
+      newStatus,
+      reason,
+      publicMessage,
+      privateNote,
+      createdAt: new Date().toISOString()
+    };
+    events.unshift(newEvt);
+    localStorage.setItem(KEYS.VENDOR_STATUS_EVENTS, JSON.stringify(events));
+  }
+
+  // --- USER MANAGEMENT ---
+  public getUsers(): User[] {
+    const raw = localStorage.getItem(KEYS.USERS);
+    return raw ? JSON.parse(raw) : INITIAL_USERS;
+  }
+
+  public banUser(userId: string, reason: string, privateNote?: string) {
+    const users = this.getUsers();
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx !== -1) {
+      users[idx].isBanned = true;
+      users[idx].banReason = reason;
+      localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+    }
+    if (privateNote) {
+      this.addAdminNote('user', userId, privateNote);
+    }
+    this.addAuditLog('user_banned', reason, 'user', userId, {
+      publicMessage: `User account suspended: ${reason}`,
+      privateNote
+    });
+    this.sendNotification(userId, 'system', 'Account Suspended', `Your account has been restricted by platform administration. Reason: ${reason}`);
+    this.notify();
+  }
+
+  public unbanUser(userId: string, reason: string, privateNote?: string) {
+    const users = this.getUsers();
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx !== -1) {
+      users[idx].isBanned = false;
+      users[idx].banReason = undefined;
+      localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+    }
+    if (privateNote) {
+      this.addAdminNote('user', userId, privateNote);
+    }
+    this.addAuditLog('user_unbanned', reason, 'user', userId, {
+      publicMessage: `User account status reinstated: ${reason}`,
+      privateNote
+    });
+    this.sendNotification(userId, 'system', 'Account Reinstated', `Your account restriction has been lifted.`);
+    this.notify();
+  }
+
+  public toggleCodEligibilityOverride(userId: string, override: boolean, reason: string) {
+    const users = this.getUsers();
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx !== -1) {
+      users[idx].codEligibilityOverride = override;
+      localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+    }
+    this.addAuditLog('cod_override_updated', reason, 'user', userId, {
+      publicMessage: `COD Eligibility Override set to ${override}`,
+      privateNote: `Reason: ${reason}`
+    });
+    this.notify();
+  }
+
+  public verifyUserPhone(userId: string) {
+    const users = this.getUsers();
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx !== -1) {
+      users[idx].phoneNumberVerified = true;
+      localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+      this.notify();
+    }
   }
 
   // --- TRUST PROFILES ---
@@ -769,44 +1065,57 @@ class StorageService {
   }
 
   public adjustTrustScore(userId: string, delta: number, reason: string) {
-    const profiles = this.getTrustProfiles();
-    let profile = profiles.find(p => p.userId === userId);
-    if (!profile) {
-      profile = {
-        id: createCuid('tp_'),
-        userId,
-        score: 50,
-        codEligible: false,
-        riskLevel: 'medium',
-        manualReviewRequired: false,
-        lastEvaluatedAt: new Date().toISOString()
-      };
-      profiles.push(profile);
+    const actorId = this.getCurrentUser().id;
+    TrustService.addEvent(userId, 'manual_adjustment', delta, reason, actorId);
+    this.sendNotification(userId, 'trust_update', 'Trust Profile Updated', `Your account trust score was updated. Reason: ${reason}`);
+    this.notify();
+  }
+
+  // --- PHASE 14: MARKETING & COUPONS ---
+  public getCoupons(): Coupon[] {
+    const raw = localStorage.getItem(KEYS.COUPONS);
+    return raw ? JSON.parse(raw) : INITIAL_COUPONS;
+  }
+
+  public saveCoupon(coupon: Coupon): Coupon {
+    const coupons = this.getCoupons();
+    const idx = coupons.findIndex(c => c.id === coupon.id);
+    if (idx !== -1) {
+      coupons[idx] = { ...coupon, updatedAt: new Date().toISOString() };
+    } else {
+      coupons.unshift(coupon);
+    }
+    localStorage.setItem(KEYS.COUPONS, JSON.stringify(coupons));
+    this.notify();
+    return coupon;
+  }
+
+  public getCouponRedemptions(couponId?: string, userId?: string): CouponRedemption[] {
+    const raw = localStorage.getItem(KEYS.COUPON_REDEMPTIONS);
+    const list: CouponRedemption[] = raw ? JSON.parse(raw) : [];
+    return list.filter(r => {
+      if (couponId && r.couponId !== couponId) return false;
+      if (userId && r.userId !== userId) return false;
+      return true;
+    });
+  }
+
+  public addCouponRedemption(redemption: CouponRedemption): CouponRedemption {
+    const list = this.getCouponRedemptions();
+    list.unshift(redemption);
+    localStorage.setItem(KEYS.COUPON_REDEMPTIONS, JSON.stringify(list));
+
+    // Increment usage count
+    const coupons = this.getCoupons();
+    const cIdx = coupons.findIndex(c => c.id === redemption.couponId);
+    if (cIdx !== -1) {
+      coupons[cIdx].usageCount = (coupons[cIdx].usageCount || 0) + 1;
+      coupons[cIdx].updatedAt = new Date().toISOString();
+      localStorage.setItem(KEYS.COUPONS, JSON.stringify(coupons));
     }
 
-    profile.score = Math.max(0, Math.min(100, profile.score + delta));
-    profile.codEligible = profile.score >= 65;
-    profile.riskLevel = profile.score >= 75 ? 'low' : profile.score >= 40 ? 'medium' : 'high';
-    profile.lastEvaluatedAt = new Date().toISOString();
-
-    localStorage.setItem(KEYS.TRUST_PROFILES, JSON.stringify(profiles));
-
-    // Append Trust Event
-    const events = this.getTrustEvents();
-    const newEvent: UserTrustEvent = {
-      id: createCuid('te_'),
-      userId,
-      eventType: 'manual_adjustment',
-      scoreDelta: delta,
-      reason,
-      createdAt: new Date().toISOString()
-    };
-    events.unshift(newEvent);
-    localStorage.setItem(KEYS.TRUST_EVENTS, JSON.stringify(events));
-
-    this.addAuditLog('trust_score_adjusted', `Adjusted trust score by ${delta > 0 ? '+' : ''}${delta}: ${reason}`, 'trust', userId);
-    this.sendNotification(userId, 'trust_update', 'Trust Profile Updated', `Your account trust score was updated to ${profile.score}/100.`);
     this.notify();
+    return redemption;
   }
 
   // --- PHASE 7: PAYMENTS, WEBHOOKS, REFUNDS & SETTLEMENTS ---
@@ -1152,13 +1461,26 @@ class StorageService {
 
     // Filter relevant vendor orders
     const vendorOrders = orders.flatMap(o => o.vendorOrders.filter(vo => vo.vendorProfileId === vendorProfileId));
+    
+    const items: VendorSettlementItem[] = vendorOrders.map(vo => ({
+      id: createCuid('sitem_'),
+      vendorSettlementId: '',
+      vendorOrderId: vo.id,
+      lineType: 'sale',
+      amountCents: vo.subtotalCents,
+      note: `Order #${vo.id} gross sales`
+    }));
+
     const grossAmountCents = vendorOrders.reduce((sum, vo) => sum + vo.subtotalCents, 0);
     const commissionCents = Math.round(grossAmountCents * 0.10); // 10% platform commission
     const netAmountCents = grossAmountCents - commissionCents;
 
+    const settlementId = createCuid('set_');
+    items.forEach(i => i.vendorSettlementId = settlementId);
+
     const settlements = this.getSettlements();
     const newSettlement: VendorSettlement = {
-      id: createCuid('set_'),
+      id: settlementId,
       vendorProfileId,
       vendorName: vendor?.displayName || 'Artisan Vendor',
       periodStart,
@@ -1167,13 +1489,26 @@ class StorageService {
       commissionCents,
       netAmountCents,
       status: 'pending_review',
+      items,
       createdAt: new Date().toISOString()
     };
 
     settlements.unshift(newSettlement);
     localStorage.setItem(KEYS.SETTLEMENTS, JSON.stringify(settlements));
+    this.addAuditLog('settlement_generated', `Generated settlement for ${vendor?.displayName}`, 'settlement', newSettlement.id);
     this.notify();
     return newSettlement;
+  }
+
+  public generateSettlementBatch(periodStart: string, periodEnd: string): VendorSettlement[] {
+    const vendors = this.getVendors().filter(v => v.status === 'approved');
+    const createdBatch: VendorSettlement[] = [];
+    for (const v of vendors) {
+      const set = this.generateVendorSettlement(v.id, periodStart, periodEnd);
+      createdBatch.push(set);
+    }
+    this.addAuditLog('settlement_batch_generated', `Generated settlement batch for period ${periodStart.slice(0, 10)} to ${periodEnd.slice(0, 10)} (${createdBatch.length} vendors)`, 'settlement', 'batch_' + Date.now());
+    return createdBatch;
   }
 
   public approveSettlement(settlementId: string): VendorSettlement | undefined {

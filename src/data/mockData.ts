@@ -1,4 +1,4 @@
-import { User, VendorProfile, Product, RawMaterial, Order, CourierProvider, ProductReview, DeliveryZone, DeliveryLocation, Shipment, ShipmentEvent, WishlistItem, UserStyleProfile } from '../types';
+import { User, VendorProfile, Product, RawMaterial, Order, CourierProvider, ProductReview, DeliveryZone, DeliveryLocation, Shipment, ShipmentEvent, WishlistItem, UserStyleProfile, Coupon } from '../types';
 import { createCuid } from '../utils/cuid';
 
 export const INITIAL_USERS: User[] = [
@@ -556,49 +556,74 @@ export const INITIAL_REVIEWS: ProductReview[] = [
   }
 ];
 
-export const INITIAL_COUPONS = [
+export const INITIAL_COUPONS: Coupon[] = [
   {
     id: createCuid('cpn_1'),
     code: 'HERITAGE15',
     description: '15% Off Handcrafted Heritage Arts & Crafts Collection',
-    status: 'active' as const,
+    status: 'active',
+    type: 'platform',
+    vendorProfileId: null,
     rules: {
-      discountType: 'percentage' as const,
-      discountValue: 15,
-      minOrderAmountCents: 200000, // ৳2,000 min order
-      maxDiscountCapCents: 100000  // ৳1,000 max discount cap
+      discount: { type: 'percentage', value: 15 },
+      conditions: {
+        min_order_amount: 200000, // ৳2,000 min order in cents
+        max_discount_cap: 100000, // ৳1,000 max discount cap in cents
+        max_uses_per_user: 2
+      }
     },
     usageCount: 42,
     usageLimit: 1000,
+    validFrom: '2026-01-01T00:00:00Z',
     validUntil: '2026-12-31T23:59:59Z',
-    createdAt: '2026-01-01T00:00:00Z'
+    createdByUserId: 'u_admin_system',
+    createdAt: '2026-01-01T00:00:00Z',
+    updatedAt: '2026-01-01T00:00:00Z'
   },
   {
     id: createCuid('cpn_2'),
     code: 'ARTISAN500',
-    description: '৳500 Direct Discount on Handcrafted Orders',
-    status: 'active' as const,
+    description: '৳500 Direct Discount on Dhamrai Clay Workshop Pottery',
+    status: 'active',
+    type: 'vendor',
+    vendorProfileId: 'v_clay',
     rules: {
-      discountType: 'fixed' as const,
-      discountValue: 50000, // ৳500 in cents
-      minOrderAmountCents: 300000 // ৳3,000 min order
+      discount: { type: 'fixed', value: 50000 }, // ৳500 in cents
+      conditions: {
+        specific_vendor_id: 'v_clay',
+        min_order_amount: 200000 // ৳2,000 min order in cents
+      }
     },
     usageCount: 18,
+    usageLimit: 500,
+    validFrom: '2026-02-01T00:00:00Z',
     validUntil: '2026-12-31T23:59:59Z',
-    createdAt: '2026-02-01T00:00:00Z'
+    createdByUserId: 'u_artisan1',
+    createdAt: '2026-02-01T00:00:00Z',
+    updatedAt: '2026-02-01T00:00:00Z'
   },
   {
     id: createCuid('cpn_3'),
-    code: 'WHOLESALE10',
-    description: '10% Off Bulk Raw Materials Wholesale Hub Supply',
-    status: 'active' as const,
+    code: 'FIRSTCRAFT',
+    description: '৳300 Off First Handcrafted Order',
+    status: 'active',
+    type: 'platform',
+    vendorProfileId: null,
     rules: {
-      discountType: 'percentage' as const,
-      discountValue: 10,
-      minOrderAmountCents: 500000 // ৳5,000 min order
+      discount: { type: 'fixed', value: 30000 }, // ৳300 in cents
+      conditions: {
+        min_order_amount: 150000, // ৳1,500 min order
+        first_order_only: true,
+        max_uses_per_user: 1
+      }
     },
     usageCount: 9,
-    createdAt: '2026-03-01T00:00:00Z'
+    usageLimit: null,
+    validFrom: '2026-03-01T00:00:00Z',
+    validUntil: '2026-12-31T23:59:59Z',
+    createdByUserId: 'u_admin_system',
+    createdAt: '2026-03-01T00:00:00Z',
+    updatedAt: '2026-03-01T00:00:00Z'
   }
 ];
 

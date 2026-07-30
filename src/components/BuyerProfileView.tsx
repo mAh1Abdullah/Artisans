@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { User, Order, Product, ProductReview, UserStyleProfile, Notification } from '../types';
+import { User, Order, Product, ProductReview, UserStyleProfile, Notification, UserTrustProfile, UserTrustEvent } from '../types';
 import { formatPrice } from '../utils/cuid';
 import { ProductCard } from './ProductCard';
 import { storageService } from '../services/storage';
+import { TrustService } from '../services/trustService';
 import { 
   Package, Heart, Clock, MapPin, CheckCircle, 
   Truck, ShieldCheck, User as UserIcon, FileText,
@@ -28,8 +29,12 @@ export const BuyerProfileView: React.FC<BuyerProfileViewProps> = ({
   onQuickAddToCart,
   onShowToast
 }) => {
-  const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'style' | 'notifications'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'style' | 'notifications' | 'trust'>('orders');
   const [selectedSnapshotOrder, setSelectedSnapshotOrder] = useState<Order | null>(null);
+
+  // Trust & Risk State
+  const [trustProfile, setTrustProfile] = useState<UserTrustProfile>(() => TrustService.evaluate(user.id));
+  const [trustEvents, setTrustEvents] = useState<UserTrustEvent[]>(() => storageService.getTrustEvents(user.id));
 
   // Review Modal State
   const [reviewingItem, setReviewingItem] = useState<{
@@ -74,6 +79,8 @@ export const BuyerProfileView: React.FC<BuyerProfileViewProps> = ({
       }
     }
     setNotifications(storageService.getNotifications(user.id));
+    setTrustProfile(TrustService.evaluate(user.id));
+    setTrustEvents(storageService.getTrustEvents(user.id));
   };
 
   const handleSaveStyleProfile = (e: React.FormEvent) => {
@@ -195,6 +202,15 @@ export const BuyerProfileView: React.FC<BuyerProfileViewProps> = ({
           >
             <Bell className="w-4 h-4 text-amber-800" />
             Notifications ({notifications.filter(n => !n.read).length})
+          </button>
+          <button
+            onClick={() => setActiveTab('trust')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'trust' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-700" />
+            Trust & COD ({trustProfile.score}/100)
           </button>
         </div>
       </div>
@@ -525,6 +541,142 @@ export const BuyerProfileView: React.FC<BuyerProfileViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* 5. TRUST & COD STANDING TAB */}
+      {activeTab === 'trust' && (() => {
+        const trustTier = TrustService.getTrustTier(trustProfile.score);
+        const codCheck = TrustService.isCODEligible(user.id);
+
+        return (
+          <div className="space-y-6 animate-in fade-in duration-300">
+            <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-xs">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200/80 pb-6">
+                <div>
+                  <div className="flex items-center gap-2 text-amber-800 text-[10px] font-bold uppercase tracking-widest">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    Buyer Risk Rating & COD Standing
+                  </div>
+                  <h2 className="font-serif text-2xl font-bold text-stone-900 mt-1">Platform Trust Score</h2>
+                  <p className="text-xs text-stone-500 mt-1">
+                    Your trust score governs eligibility for Cash on Delivery (COD) and priority support across artisan workshops.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className={`px-4 py-2 rounded-2xl text-xs font-bold border uppercase tracking-wider ${trustTier.badgeColor}`}>
+                    {trustTier.label}
+                  </span>
+                </div>
+              </div>
+
+              {/* Score Bar Visualization */}
+              <div className="space-y-3 bg-stone-50 p-6 rounded-2xl border border-stone-200/80">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-stone-700">Trust Score Visual Bar</span>
+                  <span className="font-serif font-bold text-xl text-stone-900">{trustProfile.score} / 100</span>
+                </div>
+
+                <div className="relative w-full h-4 bg-stone-200 rounded-full overflow-hidden shadow-inner">
+                  {/* 65% Threshold indicator line */}
+                  <div 
+                    className="absolute top-0 bottom-0 w-1 bg-amber-950 z-10" 
+                    style={{ left: '65%' }}
+                    title="COD Threshold (65/100)"
+                  />
+                  <div 
+                    className={`h-full rounded-full transition-all duration-500 ${trustTier.barColor}`} 
+                    style={{ width: `${trustProfile.score}%` }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center text-[10px] text-stone-500 font-medium pt-1">
+                  <span>0 (Min)</span>
+                  <span className="font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-full">
+                    COD Threshold: 65/100
+                  </span>
+                  <span>100 (Max)</span>
+                </div>
+
+                <p className="text-xs text-stone-600 mt-2 font-medium">{trustTier.description}</p>
+              </div>
+
+              {/* COD Status Box */}
+              <div className={`p-5 rounded-2xl border flex items-start gap-3.5 ${
+                codCheck.eligible ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-amber-50/80 border-amber-200 text-amber-950'
+              }`}>
+                {codCheck.eligible ? (
+                  <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                ) : (
+                  <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                )}
+                <div className="space-y-1">
+                  <h4 className="font-bold text-sm">
+                    {codCheck.eligible ? 'Cash on Delivery (COD) Unlocked' : 'COD Eligibility Pending'}
+                  </h4>
+                  <p className="text-xs opacity-90 leading-relaxed">{codCheck.reason}</p>
+                </div>
+              </div>
+
+              {/* Phone Verification Boost Box */}
+              {!user.phoneNumberVerified && (
+                <div className="bg-stone-900 text-stone-50 p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-md">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
+                      <Sparkles className="w-4 h-4" />
+                      Instant +10 Point Trust Boost
+                    </div>
+                    <h4 className="font-serif font-bold text-base">Verify Mobile Phone Number</h4>
+                    <p className="text-xs text-stone-300">Instantly gain +10 trust points to qualify for Cash on Delivery nationwide.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      TrustService.addEvent(user.id, 'phone_verified');
+                      storageService.verifyUserPhone(user.id);
+                      onShowToast('success', 'Phone Verified!', '+10 Trust score points added to your account.');
+                    }}
+                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-colors shrink-0 cursor-pointer shadow-sm"
+                  >
+                    Verify Phone (+10 Pts)
+                  </button>
+                </div>
+              )}
+
+              {/* Trust Event Log Ledger */}
+              <div className="space-y-3 pt-4 border-t border-stone-200/80">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-serif font-bold text-base text-stone-900">Trust Event History Ledger</h3>
+                  <span className="text-xs text-stone-500 font-mono">{trustEvents.length} Events Logged</span>
+                </div>
+
+                <div className="bg-stone-50 rounded-2xl border border-stone-200 overflow-hidden divide-y divide-stone-200/80 text-xs">
+                  {trustEvents.length === 0 ? (
+                    <div className="p-6 text-center text-stone-500 italic">
+                      No trust events recorded yet. All accounts begin at a neutral starting score of 50.
+                    </div>
+                  ) : (
+                    trustEvents.map(evt => (
+                      <div key={evt.id} className="p-3.5 flex justify-between items-center hover:bg-stone-100/60 transition-colors">
+                        <div className="space-y-0.5">
+                          <p className="font-bold text-stone-800">{evt.reason}</p>
+                          <p className="text-[10px] text-stone-400 font-mono">{new Date(evt.createdAt).toLocaleString()}</p>
+                        </div>
+                        <span className={`font-mono font-bold text-xs px-2.5 py-1 rounded-lg ${
+                          evt.scoreDelta >= 0 
+                            ? 'bg-emerald-100 text-emerald-800' 
+                            : 'bg-rose-100 text-rose-800'
+                        }`}>
+                          {evt.scoreDelta > 0 ? `+${evt.scoreDelta}` : evt.scoreDelta} Pts
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
 
       {/* VERIFIED PURCHASE REVIEW SUBMISSION MODAL */}
       {reviewingItem && (

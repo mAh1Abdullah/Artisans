@@ -14,6 +14,9 @@ export interface User {
   avatarUrl?: string;
   phoneNumber?: string;
   phoneNumberVerified?: boolean;
+  isBanned?: boolean;
+  banReason?: string;
+  codEligibilityOverride?: boolean;
   createdAt: string;
 }
 
@@ -36,23 +39,44 @@ export interface UserTrustEvent {
   createdAt: string;
 }
 
-export interface CouponRule {
-  discountType: 'percentage' | 'fixed';
-  discountValue: number; // percentage (e.g. 15) or fixed cents (e.g. 50000)
-  minOrderAmountCents?: number;
-  maxDiscountCapCents?: number;
-  firstOrderOnly?: boolean;
+export interface CouponRules {
+  discount: {
+    type: 'percentage' | 'fixed';
+    value: number; // percentage (e.g., 15 = 15%) or fixed amount in Cents
+  };
+  conditions?: {
+    min_order_amount?: number; // in Cents
+    max_discount_cap?: number; // max cap in Cents (for percentage)
+    applicable_categories?: string[];
+    first_order_only?: boolean;
+    max_uses_per_user?: number;
+    specific_vendor_id?: string;
+  };
 }
 
 export interface Coupon {
-  id: string;
-  code: string; // e.g. "HERITAGE15", "CRAFT500"
+  id: string; // CUID2
+  code: string; // uppercase unique coupon code
   description: string;
   status: 'active' | 'inactive' | 'expired';
-  rules: CouponRule;
+  type: 'platform' | 'vendor';
+  vendorProfileId?: string | null; // null = platform-wide
+  rules: CouponRules;
+  usageLimit?: number | null; // null = unlimited
   usageCount: number;
-  usageLimit?: number;
-  validUntil?: string;
+  validFrom?: string | null;
+  validUntil?: string | null;
+  createdByUserId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CouponRedemption {
+  id: string; // CUID2
+  couponId: string;
+  userId: string;
+  orderId: string;
+  discountAmountCents: number;
   createdAt: string;
 }
 
@@ -73,9 +97,25 @@ export interface AuditLog {
   actorUserId: string;
   actorRole: UserRole;
   action: string;
-  entityType: 'vendor' | 'product' | 'user' | 'settlement' | 'coupon' | 'trust' | 'order';
+  entityType: 'vendor' | 'product' | 'user' | 'settlement' | 'coupon' | 'trust' | 'order' | 'wallet' | 'refund' | 'impersonation';
   entityId: string;
-  reason: string;
+  reason?: string;
+  publicMessage?: string;
+  privateNote?: string;
+  metadata?: Record<string, any>;
+  ipAddress?: string;
+  userAgent?: string;
+  impersonatedUserId?: string;
+  createdAt: string;
+}
+
+export interface AdminNote {
+  id: string;
+  entityType: 'vendor' | 'product' | 'user' | 'order';
+  entityId: string;
+  adminUserId: string;
+  adminEmail: string;
+  note: string;
   createdAt: string;
 }
 
@@ -150,6 +190,8 @@ export interface Product {
   reviewCount: number;
   isFeatured?: boolean;
   isTrending?: boolean;
+  status?: 'draft' | 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string;
   currentVersionId: string;
   latestVersionId: string;
   createdAt: string;

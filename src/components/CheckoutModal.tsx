@@ -3,6 +3,7 @@ import { CartItem, Address, PaymentMethod, Order, PaymentRecord } from '../types
 import { COURIER_PROVIDERS } from '../data/mockData';
 import { formatPrice } from '../utils/cuid';
 import { storageService } from '../services/storage';
+import { CouponService } from '../services/couponService';
 import { 
   X, CheckCircle2, ShieldCheck, Truck, 
   MapPin, CreditCard, ArrowRight, Tag, Smartphone, Lock, AlertCircle, RefreshCw, FileText 
@@ -99,16 +100,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const handleApplyCoupon = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!couponCode.trim()) return;
-    const res = storageService.validateCoupon(couponCode, subtotalCents);
+    const res = CouponService.validate(couponCode, currentUser.id, cart, subtotalCents);
     if (res.valid) {
       setAppliedCoupon({
-        code: res.coupon?.code || couponCode.toUpperCase(),
-        discountCents: res.discountCents,
-        message: res.message
+        code: res.coupon?.code || couponCode.trim().toUpperCase(),
+        discountCents: res.discountAmountCents,
+        message: `Promo code '${res.coupon?.code}' applied! Saved ৳${Math.round(res.discountAmountCents / 100).toLocaleString()}.`
       });
       setCouponError('');
     } else {
-      setCouponError(res.message);
+      setCouponError(res.reason || 'Invalid promo coupon.');
       setAppliedCoupon(null);
     }
   };
@@ -137,6 +138,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         'cod',
         selectedCourier.name
       );
+      if (appliedCoupon) {
+        CouponService.apply(appliedCoupon.code, currentUser.id, newOrder.id, appliedCoupon.discountCents);
+      }
       storageService.createPaymentAttempt(newOrder.id, 'cod', grandTotalCents, { note: 'COD upon doorstep delivery' });
       setPlacedOrder(newOrder);
       setStep('confirmation');
@@ -168,6 +172,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       paymentMethod,
       selectedCourier.name
     );
+
+    if (appliedCoupon) {
+      CouponService.apply(appliedCoupon.code, currentUser.id, newOrder.id, appliedCoupon.discountCents);
+    }
 
     // 1. Record payment attempt
     const attempt = storageService.createPaymentAttempt(newOrder.id, paymentMethod, grandTotalCents, {
