@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { 
   ShoppingBag, Heart, Search, User, Store, Package, 
-  Sparkles, Menu, X, ChevronDown, Layers
+  Sparkles, Menu, X, ChevronDown, Layers, Bell, ShieldCheck, Check
 } from 'lucide-react';
 import { User as UserType, UserRole } from '../types';
-import { formatPrice } from '../utils/cuid';
+import { storageService } from '../services/storage';
 
 interface HeaderProps {
   currentUser: UserType;
@@ -37,6 +37,14 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const notifications = storageService.getNotifications(currentUser.id);
+  const unreadNotifs = notifications.filter(n => !n.read);
+
+  const handleMarkNotifsRead = () => {
+    storageService.markAllNotificationsRead(currentUser.id);
+  };
 
   const categories = [
     { id: 'all', label: 'All Handcrafted Arts' },
@@ -151,6 +159,58 @@ export const Header: React.FC<HeaderProps> = ({
                     <Layers className="w-4 h-4 text-emerald-700" />
                     Raw Materials Wholesaler
                   </button>
+                  <button
+                    onClick={() => { onRoleChange('admin'); setActiveView('admin_dashboard'); setRoleMenuOpen(false); }}
+                    className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-amber-50 ${currentUser.role === 'admin' ? 'font-semibold text-amber-900 bg-amber-50/50' : 'text-stone-700'}`}
+                  >
+                    <ShieldCheck className="w-4 h-4 text-[#8B4513]" />
+                    Admin Command Center
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Notification Bell Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setNotifOpen(!notifOpen);
+                  if (!notifOpen) handleMarkNotifsRead();
+                }}
+                className="p-2 rounded-lg text-stone-700 hover:bg-stone-100 transition-colors relative cursor-pointer"
+                title="System Notifications"
+              >
+                <Bell className="w-5 h-5 text-stone-700" />
+                {unreadNotifs.length > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-600 rounded-full animate-ping" />
+                )}
+                {unreadNotifs.length > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-600 rounded-full" />
+                )}
+              </button>
+
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-[#E5E2D9] p-4 z-50 text-xs space-y-3 animate-in fade-in zoom-in-95">
+                  <div className="flex justify-between items-center border-b border-[#E5E2D9] pb-2">
+                    <span className="font-serif font-bold text-sm text-[#1A1A1A]">Notifications</span>
+                    <button onClick={handleMarkNotifsRead} className="text-[10px] font-bold text-[#8B4513] uppercase hover:underline">
+                      Mark all read
+                    </button>
+                  </div>
+
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <p className="text-center text-[#8E8C82] py-4">No notifications yet.</p>
+                    ) : (
+                      notifications.map(n => (
+                        <div key={n.id} className={`p-2.5 rounded-xl border transition-colors ${n.read ? 'bg-white border-[#E5E2D9]' : 'bg-[#FAF9F6] border-[#8B4513]/30'}`}>
+                          <p className="font-bold text-[#1A1A1A]">{n.title}</p>
+                          <p className="text-[11px] text-[#5C5A52] mt-0.5">{n.body}</p>
+                          <p className="text-[9px] text-[#8E8C82] mt-1">{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -261,6 +321,17 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Layers className="w-3 h-3 text-[#8B4513]" />
             Wholesale Raw Materials
+          </button>
+          <button
+            onClick={() => setActiveView('shipping')}
+            className={`pb-1 border-b-2 whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeView === 'shipping'
+                ? 'border-[#8B4513] text-[#8B4513]'
+                : 'border-transparent text-[#8E8C82] hover:text-[#1A1A1A]'
+            }`}
+          >
+            <Package className="w-3 h-3 text-[#8B4513]" />
+            Shipping & Couriers
           </button>
         </div>
       </div>

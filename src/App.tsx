@@ -12,6 +12,8 @@ import { RawMaterialsPage } from './components/RawMaterialsPage';
 import { SellerSignupPage } from './components/SellerSignupPage';
 import { BuyerProfileView } from './components/BuyerProfileView';
 import { SellerDashboardView } from './components/SellerDashboardView';
+import { AdminDashboardView } from './components/AdminDashboardView';
+import { ShippingManagementPage } from './components/ShippingManagementPage';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { CraftAdvisorModal } from './components/CraftAdvisorModal';
@@ -26,7 +28,7 @@ export default function App() {
   const [vendors, setVendors] = useState<VendorProfile[]>(() => storageService.getVendors());
   const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>(() => storageService.getRawMaterials());
   const [cart, setCart] = useState<CartItem[]>(() => storageService.getCart());
-  const [wishlist, setWishlist] = useState<string[]>(() => storageService.getWishlist());
+  const [wishlist, setWishlist] = useState<string[]>(() => storageService.getWishlist(storageService.getCurrentUser().id).map(w => w.productId));
   const [orders, setOrders] = useState<Order[]>(() => storageService.getOrders());
   const [reviews, setReviews] = useState<ProductReview[]>(() => storageService.getReviews());
   const [settlements, setSettlements] = useState<VendorSettlement[]>(() => storageService.getSettlements());
@@ -53,7 +55,8 @@ export default function App() {
       setVendors(storageService.getVendors());
       setRawMaterials(storageService.getRawMaterials());
       setCart(storageService.getCart());
-      setWishlist(storageService.getWishlist());
+      const u = storageService.getCurrentUser();
+      setWishlist(storageService.getWishlist(u.id).map(w => w.productId));
       setOrders(storageService.getOrders());
       setReviews(storageService.getReviews());
       setSettlements(storageService.getSettlements());
@@ -82,9 +85,9 @@ export default function App() {
   // Wishlist Handler
   const handleToggleWishlist = (productId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    const isAdded = storageService.toggleWishlist(productId);
+    const { isWishlisted } = storageService.toggleWishlist(currentUser.id, productId);
     const prod = products.find(p => p.id === productId);
-    if (isAdded) {
+    if (isWishlisted) {
       showToast('Added to Wishlist', `Saved "${prod?.title || 'Item'}" to your wishlist.`, 'success');
     } else {
       showToast('Removed from Wishlist', 'Item removed from your wishlist.', 'info');
@@ -176,16 +179,25 @@ export default function App() {
 
   // Add Review
   const handleAddReview = (productId: string, rating: number, title: string, comment: string) => {
-    storageService.addReview({
-      productId,
-      userId: currentUser.id,
-      userName: currentUser.name,
-      userAvatar: currentUser.avatarUrl,
-      rating,
-      title,
-      comment
-    });
-    showToast('Review Submitted', 'Thank you for your verified artisan feedback!', 'success');
+    const prod = products.find(p => p.id === productId);
+    const vendorProfileId = prod?.vendorProfileId || 'v_dhamrai_pottery';
+    const orderItemId = `item_${Date.now()}`;
+    try {
+      storageService.submitReview(
+        currentUser.id,
+        currentUser.name,
+        currentUser.avatarUrl,
+        productId,
+        vendorProfileId,
+        orderItemId,
+        rating,
+        title,
+        comment
+      );
+      showToast('Review Submitted', 'Thank you for your verified artisan feedback!', 'success');
+    } catch (err: any) {
+      showToast('Review Submitted', err.message || 'Review recorded.', 'info');
+    }
   };
 
   // Filter products for homepage explore grid
@@ -316,8 +328,9 @@ export default function App() {
       {activeView === 'raw_materials' && (
         <main className="flex-1">
           <RawMaterialsPage
-            rawMaterials={rawMaterials}
-            onAddToCart={handleAddRawMaterialToCart}
+            currentUser={currentUser}
+            onNavigateToSignup={() => setActiveView('seller_signup')}
+            onShowToast={showToast}
           />
         </main>
       )}
@@ -343,6 +356,7 @@ export default function App() {
             onToggleWishlist={handleToggleWishlist}
             onSelectProduct={(p) => setSelectedProduct(p)}
             onQuickAddToCart={handleQuickAddToCart}
+            onShowToast={(type, title, msg) => showToast(title, msg, type)}
           />
         </main>
       )}
@@ -361,6 +375,25 @@ export default function App() {
             }}
             onUpdateOrderStatus={handleUpdateOrderStatus}
             onApplySeller={() => setActiveView('seller_signup')}
+          />
+        </main>
+      )}
+
+      {/* VIEW 6: ADMIN DASHBOARD */}
+      {activeView === 'admin_dashboard' && (
+        <main className="flex-1">
+          <AdminDashboardView
+            onShowToast={(type, title, message) => showToast(title, message, type)}
+          />
+        </main>
+      )}
+
+      {/* VIEW 7: SHIPPING & COURIER MANAGEMENT */}
+      {activeView === 'shipping' && (
+        <main className="flex-1">
+          <ShippingManagementPage
+            currentUser={currentUser}
+            onShowToast={(type, title, message) => showToast(title, message, type)}
           />
         </main>
       )}

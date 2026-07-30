@@ -1,4 +1,4 @@
-import { User, VendorProfile, Product, RawMaterial, Order, CourierProvider, ProductReview } from '../types';
+import { User, VendorProfile, Product, RawMaterial, Order, CourierProvider, ProductReview, DeliveryZone, DeliveryLocation, Shipment, ShipmentEvent, WishlistItem, UserStyleProfile } from '../types';
 import { createCuid } from '../utils/cuid';
 
 export const INITIAL_USERS: User[] = [
@@ -314,86 +314,129 @@ export const INITIAL_PRODUCTS: Product[] = [
 export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
   {
     id: createCuid('raw_1'),
-    supplierVendorId: INITIAL_USERS[2].id,
+    wholesalerVendorProfileId: INITIAL_VENDORS[0].id,
     supplierName: 'Chittagong Raw Supplies Co.',
-    title: 'Purified White Earthenware Clay Powder (Grade A)',
-    description: 'High-plasticity refined ceramic powder ideal for wheel-throwing, sculpturing, and kiln-firing up to 1200°C. Sourced from natural riverbed deposits.',
-    category: 'Clays & Glazes',
-    unit: '25kg bag',
+    name: 'Purified White Earthenware Clay Powder (Grade A)',
+    category: 'Clay',
+    description: 'High-plasticity refined ceramic clay powder ideal for wheel-throwing, sculpturing, and kiln-firing up to 1200°C. Sourced from natural riverbed deposits.',
+    priceCents: 120000, // ৳1,200 per bag
+    unit: 'bag (25kg)',
+    moq: 2, // 2 bags min
+    stockQuantity: 250,
+    status: 'active',
     images: [
       'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&q=80&w=800'
     ],
-    moq: 2, // 2 bags min
-    inStockQuantity: 250,
-    tieredPricing: [
-      { minQuantity: 2, pricePerUnitCents: 120000 },  // ৳1,200 / bag (2-5)
-      { minQuantity: 6, pricePerUnitCents: 105000 },  // ৳1,050 / bag (6-19)
-      { minQuantity: 20, pricePerUnitCents: 89000 }   // ৳890 / bag (20+)
-    ],
-    origin: 'Chittagong River Basin',
-    rating: 4.9
+    createdAt: '2026-01-10T08:00:00Z',
+    updatedAt: '2026-01-10T08:00:00Z'
   },
   {
     id: createCuid('raw_2'),
-    supplierVendorId: INITIAL_USERS[2].id,
-    supplierName: 'Chittagong Raw Supplies Co.',
-    title: 'Seasoned Teak Wood Planks (Kiln Dried)',
-    description: 'First-grade Chittagong Hill teak wood planks with smooth grain pattern. Treated for bug resistance and moisture content below 10%. Perfect for carvers and woodworkers.',
-    category: 'Hardwood Timber',
+    wholesalerVendorProfileId: INITIAL_VENDORS[2].id,
+    supplierName: 'Chittagong Hill Timber Guild',
+    name: 'Seasoned Teak Wood Planks (Kiln Dried)',
+    category: 'Wood',
+    description: 'First-grade Chittagong Hill teak wood planks with smooth grain pattern. Treated for bug resistance and moisture content below 10%. Perfect for carvers.',
+    priceCents: 45000, // ৳450 per board foot
     unit: 'board foot',
+    moq: 10,
+    stockQuantity: 1200,
+    status: 'active',
     images: [
       'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800'
     ],
-    moq: 10,
-    inStockQuantity: 1200,
-    tieredPricing: [
-      { minQuantity: 10, pricePerUnitCents: 45000 }, // ৳450 / board ft (10-49)
-      { minQuantity: 50, pricePerUnitCents: 38000 }, // ৳380 / board ft (50-199)
-      { minQuantity: 200, pricePerUnitCents: 32000 } // ৳320 / board ft (200+)
-    ],
-    origin: 'Chittagong Hill Tracts',
-    rating: 4.95
+    createdAt: '2026-01-12T09:30:00Z',
+    updatedAt: '2026-01-12T09:30:00Z'
   },
   {
     id: createCuid('raw_3'),
-    supplierVendorId: INITIAL_USERS[2].id,
+    wholesalerVendorProfileId: INITIAL_VENDORS[1].id,
     supplierName: 'Sylhet Fiber & Yarn Distributors',
-    title: 'Raw Handspun Mulberry Silk Thread Spools (Natural Cream)',
-    description: '100% pure organic mulberry silk yarn spools suitable for handloom weaving, embroidery, and textile crafts.',
-    category: 'Yarns & Dyes',
-    unit: '500g spool',
+    name: 'Raw Handspun Mulberry Silk Thread Spools (Natural Cream)',
+    category: 'Yarn',
+    description: '100% pure organic mulberry silk yarn spools suitable for handloom weaving, Jamdani embroidery, and textile crafts.',
+    priceCents: 220000, // ৳2,200 per spool
+    unit: 'spool (500g)',
+    moq: 1,
+    stockQuantity: 80,
+    status: 'active',
     images: [
       'https://images.unsplash.com/photo-1606744888344-493238951221?auto=format&fit=crop&q=80&w=800'
     ],
-    moq: 1,
-    inStockQuantity: 80,
-    tieredPricing: [
-      { minQuantity: 1, pricePerUnitCents: 220000 }, // ৳2,200 / spool
-      { minQuantity: 5, pricePerUnitCents: 195000 }, // ৳1,950 / spool
-      { minQuantity: 15, pricePerUnitCents: 175000 } // ৳1,750 / spool
-    ],
-    origin: 'Rajshahi Silk Estates',
-    rating: 4.88
+    createdAt: '2026-01-15T11:00:00Z',
+    updatedAt: '2026-01-15T11:00:00Z'
   },
   {
     id: createCuid('raw_4'),
-    supplierVendorId: INITIAL_USERS[2].id,
-    supplierName: 'Metalsmith Supply Guild',
-    title: 'Pure Brass Sheet (1mm Thickness) for Metalsmithing',
+    wholesalerVendorProfileId: INITIAL_VENDORS[2].id,
+    supplierName: 'Dhamrai Metalsmith Supply Guild',
+    name: 'Pure Solid Brass Sheet (1mm Thickness)',
+    category: 'Metals',
     description: 'High-purity brass sheets for custom jewelry, filigree stamping, lamp engraving, and metal craftwork.',
-    category: 'Metals & Wire',
+    priceCents: 180000, // ৳1,800 per sheet
     unit: 'sheet (2ft x 3ft)',
+    moq: 2,
+    stockQuantity: 150,
+    status: 'active',
     images: [
       'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=800'
     ],
-    moq: 2,
-    inStockQuantity: 150,
-    tieredPricing: [
-      { minQuantity: 2, pricePerUnitCents: 180000 }, // ৳1,800
-      { minQuantity: 10, pricePerUnitCents: 155000 } // ৳1,550
+    createdAt: '2026-01-18T14:20:00Z',
+    updatedAt: '2026-01-18T14:20:00Z'
+  },
+  {
+    id: createCuid('raw_5'),
+    wholesalerVendorProfileId: INITIAL_VENDORS[0].id,
+    supplierName: 'Dhaka Craft Beads Depot',
+    name: 'Natural Hand-Carved Terracotta Craft Beads Set',
+    category: 'Beads',
+    description: 'Assorted artisan terracotta clay beads with pre-drilled holes for jewelry making, tapestries, and traditional wall hangings.',
+    priceCents: 85000, // ৳850 per pack
+    unit: 'pack (500 pcs)',
+    moq: 3,
+    stockQuantity: 300,
+    status: 'active',
+    images: [
+      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800'
     ],
-    origin: 'Dhamrai Metal Foundry',
-    rating: 4.9
+    createdAt: '2026-01-20T10:00:00Z',
+    updatedAt: '2026-01-20T10:00:00Z'
+  },
+  {
+    id: createCuid('raw_6'),
+    wholesalerVendorProfileId: INITIAL_VENDORS[2].id,
+    supplierName: 'Hazaribagh Tanneries Corp',
+    name: 'Full Grain Vegetable Tanned Leather Hide (Tan Brown)',
+    category: 'Leather',
+    description: 'Eco-friendly vegetable-tanned full grain cowhide leather (1.8-2.0mm thickness) for bags, wallets, journal covers, and straps.',
+    priceCents: 420000, // ৳4,200 per hide
+    unit: 'hide (20 sq ft)',
+    moq: 1,
+    stockQuantity: 45,
+    status: 'active',
+    images: [
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800'
+    ],
+    createdAt: '2026-01-22T16:00:00Z',
+    updatedAt: '2026-01-22T16:00:00Z'
+  },
+  {
+    id: createCuid('raw_7'),
+    wholesalerVendorProfileId: INITIAL_VENDORS[1].id,
+    supplierName: 'Eco-Craft Packaging Hub',
+    name: 'Eco Hand-Pressed Recycled Jute Packaging Bags',
+    category: 'Packaging',
+    description: 'Biodegradable artisan jute packaging pouches with drawstring loops for eco-conscious luxury product presentation.',
+    priceCents: 65000, // ৳650 per set
+    unit: 'set (50 bags)',
+    moq: 5,
+    stockQuantity: 500,
+    status: 'active',
+    images: [
+      'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&q=80&w=800'
+    ],
+    createdAt: '2026-01-25T12:00:00Z',
+    updatedAt: '2026-01-25T12:00:00Z'
   }
 ];
 
@@ -501,10 +544,248 @@ export const INITIAL_REVIEWS: ProductReview[] = [
     userId: 'u_buyer',
     userName: 'Anika Rahman',
     userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300',
+    orderItemId: 'item_1_1',
+    vendorProfileId: 'v_dhamrai_pottery',
     rating: 5,
-    title: 'Keeps water icy cool and beautiful engraving!',
-    comment: 'The engraving of our names on the clay base turned out so elegant. You can feel the master craftsmanship in every detail.',
+    title: 'Exquisite Terracotta Craftsmanship!',
+    comment: 'The pitcher is even more majestic in person. The terracotta glaze keeps water naturally cool and earthy. Truly authentic Bangladeshi heritage art.',
     status: 'approved',
-    createdAt: '2026-07-27T10:15:00Z'
+    createdAt: '2026-07-27T11:00:00Z',
+    submittedAt: '2026-07-27T10:00:00Z',
+    approvedAt: '2026-07-27T11:00:00Z'
   }
 ];
+
+export const INITIAL_COUPONS = [
+  {
+    id: createCuid('cpn_1'),
+    code: 'HERITAGE15',
+    description: '15% Off Handcrafted Heritage Arts & Crafts Collection',
+    status: 'active' as const,
+    rules: {
+      discountType: 'percentage' as const,
+      discountValue: 15,
+      minOrderAmountCents: 200000, // ৳2,000 min order
+      maxDiscountCapCents: 100000  // ৳1,000 max discount cap
+    },
+    usageCount: 42,
+    usageLimit: 1000,
+    validUntil: '2026-12-31T23:59:59Z',
+    createdAt: '2026-01-01T00:00:00Z'
+  },
+  {
+    id: createCuid('cpn_2'),
+    code: 'ARTISAN500',
+    description: '৳500 Direct Discount on Handcrafted Orders',
+    status: 'active' as const,
+    rules: {
+      discountType: 'fixed' as const,
+      discountValue: 50000, // ৳500 in cents
+      minOrderAmountCents: 300000 // ৳3,000 min order
+    },
+    usageCount: 18,
+    validUntil: '2026-12-31T23:59:59Z',
+    createdAt: '2026-02-01T00:00:00Z'
+  },
+  {
+    id: createCuid('cpn_3'),
+    code: 'WHOLESALE10',
+    description: '10% Off Bulk Raw Materials Wholesale Hub Supply',
+    status: 'active' as const,
+    rules: {
+      discountType: 'percentage' as const,
+      discountValue: 10,
+      minOrderAmountCents: 500000 // ৳5,000 min order
+    },
+    usageCount: 9,
+    createdAt: '2026-03-01T00:00:00Z'
+  }
+];
+
+export const INITIAL_NOTIFICATIONS = [
+  {
+    id: createCuid('notif_1'),
+    userId: 'u_buyer',
+    title: 'Order Shipped via Pathao Express',
+    body: 'Your Hand-Carved Earthen Water Pitcher set is en route with tracking #PTH-BD-889021.',
+    type: 'order_update' as const,
+    read: false,
+    createdAt: '2026-07-26T14:35:00Z'
+  },
+  {
+    id: createCuid('notif_2'),
+    userId: 'u_buyer',
+    title: 'Trust Profile Evaluated: High Trust Tier',
+    body: 'Your account verified phone number & order completion earned a +25 Trust Score boost.',
+    type: 'trust_update' as const,
+    read: true,
+    createdAt: '2026-07-25T09:00:00Z'
+  }
+];
+
+export const INITIAL_AUDIT_LOGS = [
+  {
+    id: createCuid('audit_1'),
+    actorUserId: 'u_admin_system',
+    actorRole: 'admin' as const,
+    action: 'vendor_approved',
+    entityType: 'vendor' as const,
+    entityId: INITIAL_VENDORS[0].id,
+    reason: 'Verified master artisan credentials and Dhamrai pottery workshop address documentation.',
+    createdAt: '2025-11-20T08:35:00Z'
+  },
+  {
+    id: createCuid('audit_2'),
+    actorUserId: 'u_admin_system',
+    actorRole: 'admin' as const,
+    action: 'product_approved',
+    entityType: 'product' as const,
+    entityId: INITIAL_PRODUCTS[0].id,
+    reason: 'Quality control pass for ceramic glazes and craftsmanship details.',
+    createdAt: '2026-02-01T10:05:00Z'
+  }
+];
+
+// --- PHASE 9: INITIAL SHIPPING, DELIVERY ZONES & COURIERS DATA ---
+
+export const INITIAL_DELIVERY_ZONES: DeliveryZone[] = [
+  {
+    id: 'zone_dhaka',
+    code: 'dhaka_metro',
+    name: 'Dhaka Metro Area',
+    basePriceCents: 6000, // ৳60
+    estimatedDeliveryDaysMin: 1,
+    estimatedDeliveryDaysMax: 2,
+    isActive: true
+  },
+  {
+    id: 'zone_outside',
+    code: 'outside_dhaka',
+    name: 'Outside Dhaka (District Cities)',
+    basePriceCents: 12000, // ৳120
+    estimatedDeliveryDaysMin: 2,
+    estimatedDeliveryDaysMax: 4,
+    isActive: true
+  },
+  {
+    id: 'zone_remote',
+    code: 'remote_area',
+    name: 'Remote / Hill Tracts Area',
+    basePriceCents: 18000, // ৳180
+    estimatedDeliveryDaysMin: 4,
+    estimatedDeliveryDaysMax: 7,
+    isActive: true
+  }
+];
+
+export const INITIAL_DELIVERY_LOCATIONS: DeliveryLocation[] = [
+  { id: 'loc_1', division: 'Dhaka', district: 'Dhaka', upazilaThana: 'Dhanmondi', postalCode: '1205', isRemote: false },
+  { id: 'loc_2', division: 'Dhaka', district: 'Dhaka', upazilaThana: 'Gulshan', postalCode: '1212', isRemote: false },
+  { id: 'loc_3', division: 'Chittagong', district: 'Chittagong', upazilaThana: 'Agrabad', postalCode: '4100', isRemote: false },
+  { id: 'loc_4', division: 'Sylhet', district: 'Sylhet', upazilaThana: 'Zindabazar', postalCode: '3100', isRemote: false },
+  { id: 'loc_5', division: 'Chittagong', district: 'Rangamati', upazilaThana: 'Kaptai', postalCode: '4530', isRemote: true },
+];
+
+export const INITIAL_COURIER_PROVIDERS = [
+  {
+    id: 'cour_pathao',
+    code: 'pathao',
+    name: 'Pathao Logistics Express',
+    supportsCod: true,
+    avgDeliveryHours: 24,
+    apiEndpoint: 'https://api.pathao.com/v1/merchant',
+    isActive: true
+  },
+  {
+    id: 'cour_redx',
+    code: 'redx',
+    name: 'RedX Delivery Network',
+    supportsCod: true,
+    avgDeliveryHours: 48,
+    apiEndpoint: 'https://api.redx.com.bd/v1/parcels',
+    isActive: true
+  },
+  {
+    id: 'cour_steadfast',
+    code: 'steadfast',
+    name: 'Steadfast Courier Specialist',
+    supportsCod: true,
+    avgDeliveryHours: 36,
+    apiEndpoint: 'https://api.steadfast.com.bd/v1/create_order',
+    isActive: true
+  }
+];
+
+export const INITIAL_SHIPMENTS: Shipment[] = [
+  {
+    id: createCuid('shp_1'),
+    vendorOrderId: 'vord_1',
+    courierProviderId: 'cour_pathao',
+    courierName: 'Pathao Logistics Express',
+    trackingNumber: 'PTH-BD-889021',
+    shippingFeeCents: 6000,
+    codAmountCents: 271000,
+    status: 'in_transit',
+    createdAt: '2026-07-26T14:30:00Z',
+    updatedAt: '2026-07-26T16:00:00Z'
+  }
+];
+
+export const INITIAL_SHIPMENT_EVENTS: ShipmentEvent[] = [
+  {
+    id: createCuid('shpevt_1'),
+    shipmentId: INITIAL_SHIPMENTS[0].id,
+    status: 'booked',
+    location: 'Dhamrai Pottery Workshop',
+    description: 'Shipment booked via Pathao Merchant API endpoint.',
+    eventTimestamp: '2026-07-26T14:32:00Z'
+  },
+  {
+    id: createCuid('shpevt_2'),
+    shipmentId: INITIAL_SHIPMENTS[0].id,
+    status: 'picked_up',
+    location: 'Dhamrai Pickup Point',
+    description: 'Parcel collected by Pathao Rider #441.',
+    eventTimestamp: '2026-07-26T15:10:00Z'
+  },
+  {
+    id: createCuid('shpevt_3'),
+    shipmentId: INITIAL_SHIPMENTS[0].id,
+    status: 'in_transit',
+    location: 'Tejgaon Central Hub, Dhaka',
+    description: 'Arrived at central distribution center for local delivery routing.',
+    eventTimestamp: '2026-07-26T16:00:00Z'
+  }
+];
+
+// --- PHASE 10: WISHLIST, REVIEWS & USER STYLE PROFILES MOCK DATA ---
+
+export const INITIAL_WISHLIST: WishlistItem[] = [
+  {
+    id: createCuid('wsh_1'),
+    userId: 'u_buyer',
+    productId: 'prod_2', // Muslin Saree
+    createdAt: '2026-07-20T10:00:00Z'
+  }
+];
+
+export const INITIAL_USER_STYLE_PROFILES: UserStyleProfile[] = [
+  {
+    id: createCuid('usp_1'),
+    userId: 'u_buyer',
+    department: 'Women',
+    sizeTops: 'M',
+    sizeBottoms: 'M',
+    sizeShoes: '38 EU',
+    preferences: {
+      favoriteCrafts: ['Jamdani Weaving', 'Terracotta Pottery', 'Brass Crafting'],
+      preferredColors: ['Indigo', 'Teracotta Red', 'Warm Ochre'],
+      styleCategories: ['Heritage Wear', 'Traditional Home Decor']
+    },
+    consentVersion: 'v1.0',
+    consentedAt: '2026-07-01T08:00:00Z'
+  }
+];
+
+
+
