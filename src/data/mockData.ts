@@ -118,10 +118,95 @@ export const INITIAL_VENDORS: VendorProfile[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=300',
     bannerUrl: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&q=80&w=1200',
     createdAt: '2026-01-05T09:15:00Z'
+  },
+  {
+    id: createCuid('v_jewelry'),
+    organizationId: createCuid('org_jewelry'),
+    ownerUserId: createCuid('u_jewelry'),
+    publicSlug: 'sylhet-filigree-silver',
+    displayName: 'Sylhet Filigree & Silver Studio',
+    legalName: 'Sylhet Metalsmith Guild',
+    status: 'approved',
+    craftSpecialty: 'Heritage Silver Filigree & Metalsmithing',
+    description: 'Centuries-old Tarkashi (silver filigree) technique handcrafted into lightweight peacock bridal jewelry, Kundan choker sets, and fine hammered brass accessories.',
+    workshopLocation: 'Zindabazar, Sylhet',
+    supportEmail: 'silver@sylhetfiligree.bd',
+    supportPhone: '+8801822334455',
+    allowCod: true,
+    rating: 4.92,
+    reviewCount: 41,
+    verifiedArtisan: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=300',
+    bannerUrl: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=1200',
+    createdAt: '2025-09-18T10:00:00Z'
+  },
+  {
+    id: createCuid('v_painting'),
+    organizationId: createCuid('org_painting'),
+    ownerUserId: createCuid('u_painting'),
+    publicSlug: 'dhaka-rickshaw-art',
+    displayName: 'Old Dhaka Rickshaw Art Atelier',
+    legalName: 'Lalbagh Rickshaw Folk Art Guild',
+    status: 'approved',
+    craftSpecialty: 'UNESCO Rickshaw Painting & Folk Canvas Art',
+    description: 'Master rickshaw painters crafting vibrant pop-culture floral, peacock, and heritage village folk art on stretched canvas, metal trays, and home decor.',
+    workshopLocation: 'Lalbagh, Dhaka',
+    supportEmail: 'artist@rickshawart.bd',
+    supportPhone: '+8801733445566',
+    allowCod: true,
+    rating: 4.88,
+    reviewCount: 53,
+    verifiedArtisan: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&q=80&w=300',
+    bannerUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&q=80&w=1200',
+    createdAt: '2025-08-25T11:30:00Z'
+  },
+  {
+    id: createCuid('v_leather'),
+    organizationId: createCuid('org_leather'),
+    ownerUserId: createCuid('u_leather'),
+    publicSlug: 'hazaribagh-leather',
+    displayName: 'Hazaribagh Heritage Leather Guild',
+    legalName: 'Hazaribagh Artisan Tanneries',
+    status: 'approved',
+    craftSpecialty: 'Hand-Stitched Full Grain Leatherware',
+    description: 'Eco-conscious vegetable-tanned full grain cowhide leather handcrafted into bespoke executive briefcases, travel wallets, and vintage organizers.',
+    workshopLocation: 'Hazaribagh, Dhaka',
+    supportEmail: 'crafts@hazaribaghleather.bd',
+    supportPhone: '+8801944556677',
+    allowCod: true,
+    rating: 4.86,
+    reviewCount: 38,
+    verifiedArtisan: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=300',
+    bannerUrl: 'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&q=80&w=1200',
+    createdAt: '2025-10-05T14:15:00Z'
+  },
+  {
+    id: createCuid('v_gifts'),
+    organizationId: createCuid('org_gifts'),
+    ownerUserId: createCuid('u_gifts'),
+    publicSlug: 'nakshi-kantha-keepsakes',
+    displayName: 'Nakshi Kantha & Bespoke Keepsakes',
+    legalName: 'Mymensingh Artisan Guild',
+    status: 'approved',
+    craftSpecialty: 'Personalized Embroidered Heritage Gifts',
+    description: 'Bespoke hand-embroidered family keepsakes, engraved brass memory boxes, and personalized monogrammed earthenware tea sets.',
+    workshopLocation: 'Mymensingh Crafts Village',
+    supportEmail: 'keepsakes@nakshikantha.bd',
+    supportPhone: '+8801855667788',
+    allowCod: true,
+    rating: 4.94,
+    reviewCount: 45,
+    verifiedArtisan: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=300',
+    bannerUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=1200',
+    createdAt: '2025-11-10T09:45:00Z'
   }
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
+  // 1. POTTERY & CLAY
   {
     id: createCuid('prod_1'),
     vendorProfileId: INITIAL_VENDORS[0].id,
@@ -171,6 +256,75 @@ export const INITIAL_PRODUCTS: Product[] = [
     updatedAt: '2026-02-01T10:00:00Z'
   },
   {
+    id: createCuid('prod_pottery_2'),
+    vendorProfileId: INITIAL_VENDORS[0].id,
+    vendorName: 'Dhamrai Clay Heritage Studio',
+    vendorSlug: 'clay-craft-heritage',
+    vendorLocation: 'Dhamrai, Dhaka',
+    title: 'Hand-Thrown Terracotta Dinnerware Set (12-Piece)',
+    description: 'Complete 12-piece terracotta artisan dinnerware featuring 4 large plates, 4 curry bowls, and 4 water goblets. Kiln-fired using natural organic earthenware slops for rustic Bangladeshi dining.',
+    category: 'pottery',
+    tags: ['Pottery', 'Terracotta', 'Dinnerware', 'Eco Dining', 'Kitchen'],
+    priceCents: 480000, // ৳4,800
+    compareAtPriceCents: 550000,
+    images: [
+      'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 10,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_rim',
+        type: 'select',
+        label: 'Plate Rim Style',
+        options: ['Smooth Rolled Edge', 'Scalloped Heritage Rim', 'Carved Lattice Border'],
+        required: true,
+        priceModifierCents: 0
+      }
+    ],
+    materialsUsed: ['Dhamrai Terracotta Clay', 'Natural Beeswax Sealant'],
+    craftTimeDays: 6,
+    rating: 4.88,
+    reviewCount: 19,
+    isFeatured: false,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-02-05T11:00:00Z',
+    updatedAt: '2026-02-05T11:00:00Z'
+  },
+  {
+    id: createCuid('prod_pottery_3'),
+    vendorProfileId: INITIAL_VENDORS[0].id,
+    vendorName: 'Dhamrai Clay Heritage Studio',
+    vendorSlug: 'clay-craft-heritage',
+    vendorLocation: 'Dhamrai, Dhaka',
+    title: 'Sculpted Earthenware Indoor Planter with Lotus Relief',
+    description: 'Heavyweight hand-thrown clay indoor planter decorated with hand-carved lotus leaf relief motifs around the rim. Features drainage holes and matching drip saucer.',
+    category: 'pottery',
+    tags: ['Pottery', 'Planter', 'Relief Design', 'Home Decor', 'Botanical'],
+    priceCents: 185000, // ৳1,850
+    images: [
+      'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 15,
+    isCustomizable: false,
+    materialsUsed: ['Natural Clay', 'Water-Resistant Mineral Coating'],
+    craftTimeDays: 3,
+    rating: 4.82,
+    reviewCount: 14,
+    isFeatured: false,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-02-08T09:00:00Z',
+    updatedAt: '2026-02-08T09:00:00Z'
+  },
+
+  // 2. JAMDANI & TEXTILES
+  {
     id: createCuid('prod_2'),
     vendorProfileId: INITIAL_VENDORS[1].id,
     vendorName: 'Sonargaon Royal Jamdani Weavers',
@@ -218,6 +372,75 @@ export const INITIAL_PRODUCTS: Product[] = [
     updatedAt: '2026-01-20T11:00:00Z'
   },
   {
+    id: createCuid('prod_textile_2'),
+    vendorProfileId: INITIAL_VENDORS[1].id,
+    vendorName: 'Sonargaon Royal Jamdani Weavers',
+    vendorSlug: 'sonargaon-royal-jamdani',
+    vendorLocation: 'Sonargaon, Narayanganj',
+    title: 'Handwoven Organic Khadi Cotton Scarf & Dupatta',
+    description: 'Lightweight hand-spun organic khadi cotton scarf styled with natural vegetable dyes and hand-twisted fringe edges. Soft, breathable, and timelessly versatile.',
+    category: 'textiles',
+    tags: ['Textiles', 'Khadi', 'Handloom', 'Scarf', 'Organic Dye'],
+    priceCents: 220000, // ৳2,200
+    images: [
+      'https://images.unsplash.com/photo-1606744888344-493238951221?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 14,
+    isCustomizable: false,
+    materialsUsed: ['100% Organic Handspun Cotton', 'Madder Root Natural Dye'],
+    craftTimeDays: 5,
+    rating: 4.89,
+    reviewCount: 18,
+    isFeatured: false,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-25T14:00:00Z',
+    updatedAt: '2026-01-25T14:00:00Z'
+  },
+  {
+    id: createCuid('prod_textile_3'),
+    vendorProfileId: INITIAL_VENDORS[1].id,
+    vendorName: 'Sonargaon Royal Jamdani Weavers',
+    vendorSlug: 'sonargaon-royal-jamdani',
+    vendorLocation: 'Sonargaon, Narayanganj',
+    title: 'Heritage Nakshi Kantha Hand-Embroidered Quilt Throw',
+    description: 'Traditional Bangladeshi Nakshi Kantha story quilt hand-stitched over 3 months using running stitch technique detailing rural heritage folklore and floral vines.',
+    category: 'textiles',
+    tags: ['Textiles', 'Nakshi Kantha', 'Embroidery', 'Heritage Tapestry', 'Handmade'],
+    priceCents: 850000, // ৳8,500
+    compareAtPriceCents: 980000,
+    images: [
+      'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 4,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_kantha_border',
+        type: 'select',
+        label: 'Border Color Accent',
+        options: ['Deep Crimson Indigo Stitch', 'Terracotta Gold Thread', 'Emerald Green Vine'],
+        required: true,
+        priceModifierCents: 0
+      }
+    ],
+    materialsUsed: ['Recycled Soft Vintage Cotton', 'Artisan Cotton Embroidery Thread'],
+    craftTimeDays: 45,
+    rating: 4.96,
+    reviewCount: 31,
+    isFeatured: true,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-28T10:00:00Z',
+    updatedAt: '2026-01-28T10:00:00Z'
+  },
+
+  // 3. TEAK & WOODCRAFT
+  {
     id: createCuid('prod_3'),
     vendorProfileId: INITIAL_VENDORS[2].id,
     vendorName: 'Chittagong Hill Woodcraft Guild',
@@ -264,6 +487,65 @@ export const INITIAL_PRODUCTS: Product[] = [
     updatedAt: '2026-02-10T09:00:00Z'
   },
   {
+    id: createCuid('prod_wood_2'),
+    vendorProfileId: INITIAL_VENDORS[2].id,
+    vendorName: 'Chittagong Hill Woodcraft Guild',
+    vendorSlug: 'hill-tracts-woodwork',
+    vendorLocation: 'Chittagong',
+    title: 'Hand-Carved Octagonal Teak Folding Table with Brass Inlay',
+    description: 'Artisanal octagonal folding side table crafted from Chittagong teak with intricate geometric floral carvings and hand-pressed brass wire filigree inlays.',
+    category: 'woodwork',
+    tags: ['Woodwork', 'Furniture', 'Teak Wood', 'Brass Inlay', 'Hand Carved'],
+    priceCents: 950000, // ৳9,500
+    compareAtPriceCents: 1100000,
+    images: [
+      'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 6,
+    isCustomizable: false,
+    materialsUsed: ['Chittagong Teak Wood', 'Solid Brass Wire Inlay', 'Natural Wax Polish'],
+    craftTimeDays: 10,
+    rating: 4.93,
+    reviewCount: 22,
+    isFeatured: true,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-02-11T12:00:00Z',
+    updatedAt: '2026-02-11T12:00:00Z'
+  },
+  {
+    id: createCuid('prod_wood_3'),
+    vendorProfileId: INITIAL_VENDORS[2].id,
+    vendorName: 'Chittagong Hill Woodcraft Guild',
+    vendorSlug: 'hill-tracts-woodwork',
+    vendorLocation: 'Chittagong',
+    title: 'Sculpted Mahogany Spice Box & Mortar Pestle Set',
+    description: 'Traditional 7-compartment wooden spice organizer (Masala Dabba) made from polished solid mahogany with glass view lid and matching turned mortar & pestle.',
+    category: 'woodwork',
+    tags: ['Woodwork', 'Kitchen', 'Mahogany', 'Spice Box', 'Artisan Utensils'],
+    priceCents: 260000, // ৳2,600
+    images: [
+      'https://images.unsplash.com/photo-1590736704728-f4730bb30770?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 11,
+    isCustomizable: false,
+    materialsUsed: ['Solid Mahogany Wood', 'Clear Glass Cover', 'Brass Hinge'],
+    craftTimeDays: 4,
+    rating: 4.85,
+    reviewCount: 16,
+    isFeatured: false,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-02-12T15:00:00Z',
+    updatedAt: '2026-02-12T15:00:00Z'
+  },
+
+  // 4. RESIN & BOTANICAL
+  {
     id: createCuid('prod_4'),
     vendorProfileId: INITIAL_VENDORS[3].id,
     vendorName: 'Aura Botanical & Resin Keepsakes',
@@ -308,6 +590,479 @@ export const INITIAL_PRODUCTS: Product[] = [
     latestVersionId: 'v1',
     createdAt: '2026-02-12T14:00:00Z',
     updatedAt: '2026-02-12T14:00:00Z'
+  },
+  {
+    id: createCuid('prod_resin_2'),
+    vendorProfileId: INITIAL_VENDORS[3].id,
+    vendorName: 'Aura Botanical & Resin Keepsakes',
+    vendorSlug: 'botanical-resin-studio',
+    vendorLocation: 'Dhaka',
+    title: 'Hand-Poured Resin Coasters with Gold Leaf & Pressed Ferns (Set of 4)',
+    description: 'Hexagonal clear resin coaster set containing embedded Bangladeshi dried ferns, golden marigold petals, and metallic gold foil flakes. Non-slip cork backing.',
+    category: 'glass_resin',
+    tags: ['Resin', 'Botanical', 'Coasters', 'Gold Leaf', 'Home Decor'],
+    priceCents: 195000, // ৳1,950
+    images: [
+      'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 16,
+    isCustomizable: false,
+    materialsUsed: ['Epoxy Resin', 'Pressed Fern Leaves', 'Gold Foil Flakes', 'Cork Backing'],
+    craftTimeDays: 3,
+    rating: 4.87,
+    reviewCount: 27,
+    isFeatured: false,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-02-13T10:00:00Z',
+    updatedAt: '2026-02-13T10:00:00Z'
+  },
+  {
+    id: createCuid('prod_resin_3'),
+    vendorProfileId: INITIAL_VENDORS[3].id,
+    vendorName: 'Aura Botanical & Resin Keepsakes',
+    vendorSlug: 'botanical-resin-studio',
+    vendorLocation: 'Dhaka',
+    title: 'Botanical Resin Serving Tray with Dried Purple Orchid Inlay',
+    description: 'Rectangular serving tray crafted from crystal epoxy resin encasing real dried purple orchids and gold leaf dust. Features sturdy brass handles.',
+    category: 'glass_resin',
+    tags: ['Resin', 'Serving Tray', 'Botanical', 'Orchids', 'Luxury Living'],
+    priceCents: 380000, // ৳3,800
+    images: [
+      'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 7,
+    isCustomizable: false,
+    materialsUsed: ['Food-Safe Epoxy Resin', 'Dried Purple Orchids', 'Brushed Brass Handles'],
+    craftTimeDays: 4,
+    rating: 4.91,
+    reviewCount: 12,
+    isFeatured: true,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-02-14T08:30:00Z',
+    updatedAt: '2026-02-14T08:30:00Z'
+  },
+
+  // 5. SILVER & METALSMITH / JEWELRY
+  {
+    id: createCuid('prod_jewel_1'),
+    vendorProfileId: INITIAL_VENDORS[4].id,
+    vendorName: 'Sylhet Filigree & Silver Studio',
+    vendorSlug: 'sylhet-filigree-silver',
+    vendorLocation: 'Zindabazar, Sylhet',
+    title: 'Sterling Silver Tarkashi Filigree Peacock Necklace Set',
+    description: 'Exquisite Sylhet Tarkashi (silver filigree) necklace crafted from fine 925 sterling silver wire coiled into intricate peacock feather motifs. Includes matching drop earrings.',
+    category: 'jewelry',
+    tags: ['Jewelry', 'Sterling Silver', 'Filigree', 'Peacock Motif', 'Wedding'],
+    priceCents: 750000, // ৳7,500
+    compareAtPriceCents: 850000,
+    images: [
+      'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 8,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_chain_length',
+        type: 'select',
+        label: 'Necklace Chain Length',
+        options: ['16 Inch Choker Fit', '18 Inch Standard Princess Length', '20 Inch Matinee Fit'],
+        required: true,
+        priceModifierCents: 0
+      }
+    ],
+    materialsUsed: ['925 Sterling Silver Wire', 'Natural Garnet Stones'],
+    craftTimeDays: 7,
+    rating: 4.95,
+    reviewCount: 38,
+    isFeatured: true,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-15T09:00:00Z',
+    updatedAt: '2026-01-15T09:00:00Z'
+  },
+  {
+    id: createCuid('prod_jewel_2'),
+    vendorProfileId: INITIAL_VENDORS[4].id,
+    vendorName: 'Sylhet Filigree & Silver Studio',
+    vendorSlug: 'sylhet-filigree-silver',
+    vendorLocation: 'Zindabazar, Sylhet',
+    title: 'Hammered Brass & Natural Pearl Drop Artisan Earrings',
+    description: 'Lightweight hand-hammered raw brass disc earrings adorned with genuine freshwater cultured pearl drops. Features hypoallergenic 925 silver ear wire hooks.',
+    category: 'jewelry',
+    tags: ['Jewelry', 'Brass', 'Pearls', 'Hand Hammered', 'Artisan Earrings'],
+    priceCents: 220000, // ৳2,200
+    images: [
+      'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 18,
+    isCustomizable: false,
+    materialsUsed: ['Recycled Brass Sheet', 'Freshwater Cultured Pearls', '925 Silver Hooks'],
+    craftTimeDays: 2,
+    rating: 4.84,
+    reviewCount: 21,
+    isFeatured: false,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-18T11:30:00Z',
+    updatedAt: '2026-01-18T11:30:00Z'
+  },
+  {
+    id: createCuid('prod_jewel_3'),
+    vendorProfileId: INITIAL_VENDORS[4].id,
+    vendorName: 'Sylhet Filigree & Silver Studio',
+    vendorSlug: 'sylhet-filigree-silver',
+    vendorLocation: 'Zindabazar, Sylhet',
+    title: 'Royal Meenakari Enamel & Kundan Choker Set',
+    description: 'Royal bridal choker with traditional Meenakari enamel artwork on reverse and hand-cut Kundan glass crystal settings with delicate pearl fringe tassels.',
+    category: 'jewelry',
+    tags: ['Jewelry', 'Kundan', 'Meenakari', 'Bridal Set', 'Heritage Jewelry'],
+    priceCents: 1200000, // ৳12,000
+    compareAtPriceCents: 1350000,
+    images: [
+      'https://images.unsplash.com/photo-1611591475179-be251c890784?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 4,
+    isCustomizable: false,
+    materialsUsed: ['Gold-Plated Brass', 'Kundan Glass Crystals', 'Hand Enamel Paints', 'Seed Pearls'],
+    craftTimeDays: 14,
+    rating: 4.98,
+    reviewCount: 29,
+    isFeatured: true,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-22T14:00:00Z',
+    updatedAt: '2026-01-22T14:00:00Z'
+  },
+
+  // 6. FOLK & RICKSHAW ART / PAINTINGS
+  {
+    id: createCuid('prod_paint_1'),
+    vendorProfileId: INITIAL_VENDORS[5].id,
+    vendorName: 'Old Dhaka Rickshaw Art Atelier',
+    vendorSlug: 'dhaka-rickshaw-art',
+    vendorLocation: 'Lalbagh, Dhaka',
+    title: 'Authentic Hand-Painted Rickshaw Art Motif Canvas',
+    description: 'Vibrant acrylic painting on stretched canvas by master Rickshaw artist Alamgir Hossain featuring classic peacock, floral, and movie star pop motifs in neon colors.',
+    category: 'paintings',
+    tags: ['Paintings', 'Rickshaw Art', 'Folk Art', 'Pop Art', 'Heritage Painting'],
+    priceCents: 540000, // ৳5,400
+    images: [
+      'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 7,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_rickshaw_text',
+        type: 'text',
+        label: 'Custom Bengali Text / Name Banner (Optional)',
+        placeholder: 'e.g. "শুভ যাত্রা" or "আমাদের বাড়ি"',
+        required: false,
+        priceModifierCents: 50000 // +৳500
+      }
+    ],
+    materialsUsed: ['Stretched Cotton Canvas', 'High-Gloss Enamel & Acrylic Paints'],
+    craftTimeDays: 6,
+    rating: 4.91,
+    reviewCount: 42,
+    isFeatured: true,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-10T10:00:00Z',
+    updatedAt: '2026-01-10T10:00:00Z'
+  },
+  {
+    id: createCuid('prod_paint_2'),
+    vendorProfileId: INITIAL_VENDORS[5].id,
+    vendorName: 'Old Dhaka Rickshaw Art Atelier',
+    vendorSlug: 'dhaka-rickshaw-art',
+    vendorLocation: 'Lalbagh, Dhaka',
+    title: 'Folk Village Life Kalighat Style Canvas Artwork',
+    description: 'Traditional Bangladeshi village scene depicting harvest celebration and boat racing on river Padma, painted with natural earth pigments on heavy cotton canvas.',
+    category: 'paintings',
+    tags: ['Paintings', 'Folk Art', 'Heritage', 'Canvas', 'Bangladeshi Village'],
+    priceCents: 420000, // ৳4,200
+    images: [
+      'https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 9,
+    isCustomizable: false,
+    materialsUsed: ['Heavy Cotton Canvas', 'Earth Pigments & Tempera'],
+    craftTimeDays: 8,
+    rating: 4.86,
+    reviewCount: 17,
+    isFeatured: false,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-14T13:00:00Z',
+    updatedAt: '2026-01-14T13:00:00Z'
+  },
+  {
+    id: createCuid('prod_paint_3'),
+    vendorProfileId: INITIAL_VENDORS[5].id,
+    vendorName: 'Old Dhaka Rickshaw Art Atelier',
+    vendorSlug: 'dhaka-rickshaw-art',
+    vendorLocation: 'Lalbagh, Dhaka',
+    title: 'Framed Miniature Floral & Birds Watercolor Study',
+    description: 'Delicately hand-painted watercolor study of native Bangladeshi kingfishers and water lilies framed in a rustic teak wooden floating glass frame.',
+    category: 'paintings',
+    tags: ['Paintings', 'Watercolor', 'Nature', 'Framed Artwork', 'Miniature'],
+    priceCents: 360000, // ৳3,600
+    images: [
+      'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 12,
+    isCustomizable: false,
+    materialsUsed: ['Handmade Rag Paper', 'Artist Watercolor Paints', 'Teak Floating Frame'],
+    craftTimeDays: 4,
+    rating: 4.89,
+    reviewCount: 23,
+    isFeatured: false,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-20T16:00:00Z',
+    updatedAt: '2026-01-20T16:00:00Z'
+  },
+
+  // 7. HERITAGE LEATHER
+  {
+    id: createCuid('prod_leather_1'),
+    vendorProfileId: INITIAL_VENDORS[6].id,
+    vendorName: 'Hazaribagh Heritage Leather Guild',
+    vendorSlug: 'hazaribagh-leather',
+    vendorLocation: 'Hazaribagh, Dhaka',
+    title: 'Vegetable-Tanned Full Grain Leather Executive Messenger Bag',
+    description: 'Hand-stitched full-grain cowhide leather briefcase messenger bag with brass buckle hardware, padded 15-inch laptop sleeve, and adjustable shoulder strap.',
+    category: 'leatherwork',
+    tags: ['Leatherwork', 'Full Grain', 'Messenger Bag', 'Hand Stitched', 'Executive'],
+    priceCents: 980000, // ৳9,800
+    compareAtPriceCents: 1150000,
+    images: [
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 7,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_monogram',
+        type: 'text',
+        label: 'Embossed Monogram Initials (Optional)',
+        placeholder: 'e.g. "M.A.R."',
+        required: false,
+        priceModifierCents: 30000 // +৳300
+      }
+    ],
+    materialsUsed: ['Vegetable-Tanned Full Grain Leather', 'Solid Brass Hardware', 'Waxed Linen Thread'],
+    craftTimeDays: 7,
+    rating: 4.92,
+    reviewCount: 33,
+    isFeatured: true,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-12T09:00:00Z',
+    updatedAt: '2026-01-12T09:00:00Z'
+  },
+  {
+    id: createCuid('prod_leather_2'),
+    vendorProfileId: INITIAL_VENDORS[6].id,
+    vendorName: 'Hazaribagh Heritage Leather Guild',
+    vendorSlug: 'hazaribagh-leather',
+    vendorLocation: 'Hazaribagh, Dhaka',
+    title: 'Hand-Stitched Leather Passport Cover & Wallet Travel Set',
+    description: 'Matching vegetable-tanned leather travel wallet set custom hand-stitched with waxed linen thread. Features RFID protection and dual passport slots.',
+    category: 'leatherwork',
+    tags: ['Leatherwork', 'Wallet', 'Passport Cover', 'Travel Set', 'Personalized'],
+    priceCents: 250000, // ৳2,500
+    images: [
+      'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 15,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_leather_color',
+        type: 'select',
+        label: 'Leather Finish',
+        options: ['Vintage Tan Brown', 'Midnight Ebony Black', 'Cognac Saddle Tan'],
+        required: true,
+        priceModifierCents: 0
+      }
+    ],
+    materialsUsed: ['Full Grain Cowhide Leather', 'Waxed Thread', 'Brass Snap Studs'],
+    craftTimeDays: 3,
+    rating: 4.87,
+    reviewCount: 26,
+    isFeatured: false,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-18T10:00:00Z',
+    updatedAt: '2026-01-18T10:00:00Z'
+  },
+  {
+    id: createCuid('prod_leather_3'),
+    vendorProfileId: INITIAL_VENDORS[6].id,
+    vendorName: 'Hazaribagh Heritage Leather Guild',
+    vendorSlug: 'hazaribagh-leather',
+    vendorLocation: 'Hazaribagh, Dhaka',
+    title: 'Vintage Leather Roll-Up Pen & Tool Organizer Case',
+    description: 'Rustic tan leather roll-up pouch with 8 slot compartments for fountain pens, woodcarving chisels, or paintbrush tools. Secured with a leather wrap cord.',
+    category: 'leatherwork',
+    tags: ['Leatherwork', 'Pouch', 'Tool Roll', 'Pen Case', 'Vintage Leather'],
+    priceCents: 185000, // ৳1,850
+    images: [
+      'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 20,
+    isCustomizable: false,
+    materialsUsed: ['Supple Cowhide Leather', 'Leather Thong Wrap'],
+    craftTimeDays: 2,
+    rating: 4.83,
+    reviewCount: 14,
+    isFeatured: false,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-25T11:00:00Z',
+    updatedAt: '2026-01-25T11:00:00Z'
+  },
+
+  // 8. BESPOKE KEEPSAKES / CUSTOM GIFTS
+  {
+    id: createCuid('prod_gift_1'),
+    vendorProfileId: INITIAL_VENDORS[7].id,
+    vendorName: 'Nakshi Kantha & Bespoke Keepsakes',
+    vendorSlug: 'nakshi-kantha-keepsakes',
+    vendorLocation: 'Mymensingh Crafts Village',
+    title: 'Custom Engraved Brass Keepsake Memory Box with Velvet Lining',
+    description: 'Solid brass antique-finish memory box with personalized laser engraving or Bengali calligraphy on the lid and rich maroon velvet lining inside.',
+    category: 'custom_gifts',
+    tags: ['Custom Gifts', 'Brass Box', 'Personalized', 'Engraved', 'Keepsake'],
+    priceCents: 320000, // ৳3,200
+    images: [
+      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 10,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_box_engraving',
+        type: 'text',
+        label: 'Custom Lid Inscription / Name / Date',
+        placeholder: 'e.g. "Sumi & Tanvir - 14.02.2026"',
+        required: true,
+        priceModifierCents: 0
+      }
+    ],
+    materialsUsed: ['Solid Antique Brass', 'Plush Velvet Lining'],
+    craftTimeDays: 4,
+    rating: 4.94,
+    reviewCount: 35,
+    isFeatured: true,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-15T12:00:00Z',
+    updatedAt: '2026-01-15T12:00:00Z'
+  },
+  {
+    id: createCuid('prod_gift_2'),
+    vendorProfileId: INITIAL_VENDORS[7].id,
+    vendorName: 'Nakshi Kantha & Bespoke Keepsakes',
+    vendorSlug: 'nakshi-kantha-keepsakes',
+    vendorLocation: 'Mymensingh Crafts Village',
+    title: 'Personalized Hand-Embroidered Family Name Hoop Frame',
+    description: 'Custom embroidered linen wall frame incorporating the family surname, anniversary date, and delicate floral hoop border hand-stitched by artisan weavers.',
+    category: 'custom_gifts',
+    tags: ['Custom Gifts', 'Embroidery', 'Family Frame', 'Wedding Gift', 'Bespoke'],
+    priceCents: 290000, // ৳2,900
+    images: [
+      'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 12,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_family_name',
+        type: 'text',
+        label: 'Family Name & Wedding Year',
+        placeholder: 'e.g. "The Chowdhury Family - Est. 2024"',
+        required: true,
+        priceModifierCents: 0
+      }
+    ],
+    materialsUsed: ['Unbleached Linen Fabric', 'Teak Wooden Embroidery Hoop', 'Anchor Cotton Floss'],
+    craftTimeDays: 5,
+    rating: 4.92,
+    reviewCount: 22,
+    isFeatured: false,
+    isTrending: false,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-22T09:00:00Z',
+    updatedAt: '2026-01-22T09:00:00Z'
+  },
+  {
+    id: createCuid('prod_gift_3'),
+    vendorProfileId: INITIAL_VENDORS[7].id,
+    vendorName: 'Nakshi Kantha & Bespoke Keepsakes',
+    vendorSlug: 'nakshi-kantha-keepsakes',
+    vendorLocation: 'Mymensingh Crafts Village',
+    title: 'Custom Monogrammed Terracotta Couple Tea Set',
+    description: 'Couple tea set comprising 2 hand-carved clay tea cups, 1 teapot, and a woven bamboo serving tray. Customized with initial stamping or wedding date on cups.',
+    category: 'custom_gifts',
+    tags: ['Custom Gifts', 'Tea Set', 'Terracotta', 'Couple Gift', 'Monogram'],
+    priceCents: 360000, // ৳3,600
+    images: [
+      'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&q=80&w=800'
+    ],
+    inStockQuantity: 8,
+    isCustomizable: true,
+    customizationOptions: [
+      {
+        id: 'opt_couple_initials',
+        type: 'text',
+        label: 'Initials Stamped on Cups (e.g. "A + F")',
+        placeholder: 'e.g. "R & S"',
+        required: true,
+        priceModifierCents: 0
+      }
+    ],
+    materialsUsed: ['Natural Dhamrai Clay', 'Hand-Woven Bamboo Tray'],
+    craftTimeDays: 5,
+    rating: 4.96,
+    reviewCount: 19,
+    isFeatured: false,
+    isTrending: true,
+    currentVersionId: 'v1',
+    latestVersionId: 'v1',
+    createdAt: '2026-01-28T14:00:00Z',
+    updatedAt: '2026-01-28T14:00:00Z'
   }
 ];
 

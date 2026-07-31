@@ -80,9 +80,35 @@ class StorageService {
     }
     if (!localStorage.getItem(KEYS.VENDORS)) {
       localStorage.setItem(KEYS.VENDORS, JSON.stringify(INITIAL_VENDORS));
+    } else {
+      try {
+        const storedVendors = JSON.parse(localStorage.getItem(KEYS.VENDORS) || '[]');
+        if (Array.isArray(storedVendors)) {
+          const storedIds = new Set(storedVendors.map((v: any) => v.id));
+          const missingVendors = INITIAL_VENDORS.filter(v => !storedIds.has(v.id));
+          if (missingVendors.length > 0) {
+            localStorage.setItem(KEYS.VENDORS, JSON.stringify([...storedVendors, ...missingVendors]));
+          }
+        }
+      } catch (e) {
+        localStorage.setItem(KEYS.VENDORS, JSON.stringify(INITIAL_VENDORS));
+      }
     }
     if (!localStorage.getItem(KEYS.PRODUCTS)) {
       localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
+    } else {
+      try {
+        const storedProds = JSON.parse(localStorage.getItem(KEYS.PRODUCTS) || '[]');
+        if (Array.isArray(storedProds)) {
+          const storedIds = new Set(storedProds.map((p: any) => p.id));
+          const missingProds = INITIAL_PRODUCTS.filter(p => !storedIds.has(p.id));
+          if (missingProds.length > 0) {
+            localStorage.setItem(KEYS.PRODUCTS, JSON.stringify([...storedProds, ...missingProds]));
+          }
+        }
+      } catch (e) {
+        localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
+      }
     }
     if (!localStorage.getItem(KEYS.RAW_MATERIALS)) {
       localStorage.setItem(KEYS.RAW_MATERIALS, JSON.stringify(INITIAL_RAW_MATERIALS));

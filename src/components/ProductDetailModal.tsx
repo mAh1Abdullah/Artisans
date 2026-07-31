@@ -19,6 +19,7 @@ interface ProductDetailModalProps {
     customNote: string
   ) => void;
   onAddReview: (productId: string, rating: number, title: string, comment: string) => void;
+  onSelectVendor?: (vendorId: string) => void;
 }
 
 interface SelectionItem {
@@ -33,7 +34,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onClose,
   onToggleWishlist,
   onAddToCart,
-  onAddReview
+  onAddReview,
+  onSelectVendor
 }) => {
   if (!product) return null;
 
@@ -155,17 +157,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             )}
 
             {/* Artisan Workshop Trust Box */}
-            <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-900/15 space-y-2 text-xs">
-              <div className="flex items-center gap-2 text-amber-950 font-semibold">
-                <ShieldCheck className="w-4 h-4 text-amber-800" />
+            <div className="p-4 rounded-2xl bg-[#F4EBE1] border border-[#E8DCCF] space-y-2 text-xs">
+              <div className="flex items-center gap-2 text-[#2E2A25] font-semibold">
+                <ShieldCheck className="w-4 h-4 text-[#5F7464]" />
                 <span>Verified Handcrafted Guarantee</span>
               </div>
-              <p className="text-stone-600 leading-relaxed">
+              <p className="text-[#2E2A25]/80 leading-relaxed">
                 Made directly by <strong>{product.vendorName}</strong> in <em>{product.vendorLocation}</em>. 100% authentic local craft, fair artisan pricing & eco-conscious packaging.
               </p>
-              <div className="flex items-center gap-4 text-[11px] text-amber-900 pt-1 font-medium">
+              <div className="flex items-center gap-4 text-[11px] text-[#2E2A25] pt-1 font-medium">
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-amber-700" />
+                  <Clock className="w-3.5 h-3.5 text-[#5F7464]" />
                   {product.craftTimeDays} days handcraft time
                 </span>
                 <span>•</span>
@@ -177,42 +179,51 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           {/* Right Column: Details & Customizations */}
           <div className="space-y-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-amber-900">
-                {product.vendorName}
-              </p>
-              <h1 className="font-serif text-2xl font-bold text-stone-900 mt-1 leading-snug">
+              <button
+                onClick={() => {
+                  if (onSelectVendor) {
+                    onSelectVendor(product.vendorProfileId);
+                    onClose();
+                  }
+                }}
+                className="text-xs font-bold uppercase tracking-wider text-[#C85A32] hover:underline cursor-pointer inline-flex items-center gap-1"
+              >
+                <span>{product.vendorName}</span>
+                <span className="text-[10px] font-normal lowercase text-stone-500">(Visit Shop &rarr;)</span>
+              </button>
+              <h1 className="font-serif text-2xl font-bold text-[#2E2A25] mt-1 leading-snug">
                 {product.title}
               </h1>
 
               {/* Rating & Location */}
               <div className="flex items-center gap-3 mt-2 text-xs">
-                <div className="flex items-center text-amber-600 font-bold gap-1">
-                  <Star className="w-4 h-4 fill-current text-amber-500" />
+                <div className="flex items-center text-[#2E2A25] font-bold gap-1">
+                  <Star className="w-4 h-4 fill-[#C85A32] text-[#C85A32]" />
                   <span>{product.rating.toFixed(1)}</span>
                   <span className="text-stone-400 font-normal">({product.reviewCount} artisan reviews)</span>
                 </div>
                 <span className="text-stone-300">•</span>
                 <span className="text-stone-600 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-amber-700" />
+                  <MapPin className="w-3.5 h-3.5 text-[#C85A32]" />
                   {product.vendorLocation}
                 </span>
               </div>
             </div>
 
             {/* Price Box */}
-            <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-[#F4EBE1] border border-[#E8DCCF] flex items-center justify-between">
               <div>
-                <span className="text-xs text-stone-500 block">Unit Base Price</span>
-                <span className="font-serif text-xl font-bold text-stone-900">
+                <span className="text-xs text-[#2E2A25]/70 block">Unit Base Price</span>
+                <span className="font-serif text-xl font-bold text-[#2E2A25]">
                   {formatPrice(unitPriceCents)}
                 </span>
                 {customModifiersTotalCents > 0 && (
-                  <span className="text-[11px] text-amber-800 ml-2 font-medium">
+                  <span className="text-[11px] text-[#C85A32] ml-2 font-medium">
                     (includes +{formatPrice(customModifiersTotalCents)} customizations)
                   </span>
                 )}
               </div>
-              <span className="text-xs text-emerald-800 font-medium bg-emerald-100/80 px-2.5 py-1 rounded-full">
+              <span className="text-xs text-[#5F7464] font-medium bg-white/80 px-2.5 py-1 rounded-full border border-[#5F7464]/20">
                 COD Available
               </span>
             </div>
@@ -317,7 +328,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
                 <div className="text-right flex-1">
                   <span className="text-[11px] text-stone-500 block">Total Item Amount</span>
-                  <span className="font-serif text-2xl font-bold text-amber-950">
+                  <span className="font-serif text-2xl font-bold text-[#2E2A25]">
                     {formatPrice(totalPriceCents)}
                   </span>
                 </div>
@@ -325,9 +336,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
               <button
                 onClick={handleAddToCartClick}
-                className="w-full py-3.5 px-6 rounded-2xl bg-amber-950 hover:bg-amber-900 text-amber-100 font-semibold text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-amber-950/20 transition-all cursor-pointer"
+                className="w-full py-3.5 px-6 rounded-2xl bg-[#C85A32] hover:bg-[#A84825] text-white font-semibold text-sm flex items-center justify-center gap-2.5 shadow-md transition-all cursor-pointer"
               >
-                <ShoppingBag className="w-4 h-4 text-amber-400" />
+                <ShoppingBag className="w-4 h-4 text-white" />
                 Add Handcrafted Item to Cart ({quantity})
               </button>
             </div>

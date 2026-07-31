@@ -1,7 +1,7 @@
 import React from 'react';
 import { Product } from '../types';
 import { formatPrice } from '../utils/cuid';
-import { Heart, Star, Sparkles, MapPin, Sliders } from 'lucide-react';
+import { Heart, Star, Sparkles, MapPin, Sliders, CheckCircle2 } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -9,6 +9,7 @@ interface ProductCardProps {
   onToggleWishlist: (id: string, e: React.MouseEvent) => void;
   onSelectProduct: (product: Product) => void;
   onQuickAddToCart: (product: Product, e: React.MouseEvent) => void;
+  onSelectVendor?: (vendorId: string) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -16,102 +17,109 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isWishlisted,
   onToggleWishlist,
   onSelectProduct,
-  onQuickAddToCart
+  onQuickAddToCart,
+  onSelectVendor
 }) => {
   return (
     <div
       onClick={() => onSelectProduct(product)}
-      className="group bg-white rounded-2xl border border-[#E5E2D9] hover:border-[#8B4513]/60 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer transform hover:-translate-y-1"
+      className="group bg-white rounded-2xl border border-[#2E2A25]/15 hover:border-[#2E2A25]/40 overflow-hidden shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col cursor-pointer transform hover:-translate-y-0.5"
     >
       {/* Product Image Container */}
-      <div className="relative aspect-4/3 overflow-hidden bg-[#EAE8E0]">
+      <div className="relative aspect-square overflow-hidden bg-[#F4EBE1]">
         <img
           src={product.images[0]}
           alt={product.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Wishlist Button */}
+        {/* Etsy Floating Favorite Wishlist Button */}
         <button
           onClick={(e) => onToggleWishlist(product.id, e)}
-          className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md shadow-md transition-all cursor-pointer ${
+          className={`absolute top-2.5 right-2.5 p-2 rounded-full shadow-md transition-all cursor-pointer ${
             isWishlisted
-              ? 'bg-[#8B4513] text-white'
-              : 'bg-white/90 hover:bg-white text-stone-700 hover:text-[#8B4513]'
+              ? 'bg-[#C85A32] text-white'
+              : 'bg-white/90 hover:bg-white text-[#2E2A25] hover:text-[#C85A32]'
           }`}
-          title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
+          title={isWishlisted ? 'Remove from favorites' : 'Add to favorites'}
         >
-          <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current' : ''}`} />
+          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
         </button>
 
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
+        {/* Etsy's Pick / Badge */}
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+          {product.isTrending && (
+            <span className="bg-white/95 text-[#2E2A25] text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1 border border-[#2E2A25]/10">
+              <Sparkles className="w-2.5 h-2.5 text-[#C85A32]" />
+              Artisans' Pick
+            </span>
+          )}
           {product.isCustomizable && (
-            <span className="bg-[#1A1A1A]/90 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full backdrop-blur-md flex items-center gap-1 shadow-xs border border-white/20">
+            <span className="bg-[#2E2A25]/90 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-xs flex items-center gap-1">
               <Sliders className="w-2.5 h-2.5 text-amber-300" />
               Customizable
             </span>
           )}
-          {product.isTrending && (
-            <span className="bg-[#8B4513]/90 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full backdrop-blur-md flex items-center gap-1 shadow-xs border border-white/20">
-              <Sparkles className="w-2.5 h-2.5 text-amber-300" />
-              Spotlight
-            </span>
-          )}
         </div>
 
-        {/* Location & Workshop Tag */}
-        <div className="absolute bottom-2.5 left-3 right-3 text-amber-100 text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 drop-shadow-sm">
+        {/* Location Tag */}
+        <div className="absolute bottom-2 left-2.5 text-white text-[10px] font-medium flex items-center gap-1 drop-shadow-md">
           <MapPin className="w-3 h-3 text-amber-300 shrink-0" />
           <span className="truncate">{product.vendorLocation}</span>
         </div>
       </div>
 
       {/* Card Content */}
-      <div className="p-4 flex-1 flex flex-col justify-between space-y-3 bg-[#FAF9F6]">
+      <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2 bg-white">
         <div>
-          {/* Artisan Vendor Info */}
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8B4513] truncate">
-            {product.vendorName}
-          </p>
+          {/* Vendor Name & Star Seller */}
+          <div 
+            onClick={(e) => {
+              if (onSelectVendor) {
+                e.stopPropagation();
+                onSelectVendor(product.vendorProfileId);
+              }
+            }}
+            className="flex items-center gap-1 text-[11px] font-medium text-stone-500 hover:text-[#C85A32] cursor-pointer truncate"
+          >
+            <span className="truncate hover:underline">{product.vendorName}</span>
+            <CheckCircle2 className="w-3 h-3 text-[#5F7464] shrink-0" title="Star Seller" />
+          </div>
 
           {/* Product Title */}
-          <h3 className="font-serif italic font-bold text-base text-[#1A1A1A] line-clamp-2 mt-0.5 group-hover:text-[#8B4513] transition-colors leading-snug">
+          <h3 className="font-sans font-normal text-sm text-[#2E2A25] line-clamp-2 mt-0.5 group-hover:text-[#C85A32] transition-colors leading-snug">
             {product.title}
           </h3>
 
-          {/* Ratings & Crafts time */}
-          <div className="flex items-center gap-2 mt-2 text-xs text-[#5C5A52]">
-            <div className="flex items-center text-[#8B4513] font-bold gap-0.5">
-              <Star className="w-3.5 h-3.5 fill-current text-amber-600" />
+          {/* Etsy Ratings Display */}
+          <div className="flex items-center gap-1.5 mt-1.5 text-xs text-[#2E2A25]">
+            <div className="flex items-center text-[#2E2A25] font-bold gap-0.5">
+              <Star className="w-3.5 h-3.5 fill-[#C85A32] text-[#C85A32]" />
               <span>{product.rating.toFixed(1)}</span>
-              <span className="text-[#8E8C82] font-normal">({product.reviewCount})</span>
+              <span className="text-stone-500 font-normal">({product.reviewCount})</span>
             </div>
-            <span className="text-[#E5E2D9]">•</span>
-            <span className="text-[10px] font-medium text-[#8E8C82] uppercase tracking-wider">{product.craftTimeDays}d craft time</span>
           </div>
         </div>
 
-        {/* Footer: Pricing & Action */}
-        <div className="pt-3 border-t border-[#E5E2D9] flex items-center justify-between gap-2">
+        {/* Footer: Price & Free Shipping tag / Add Button */}
+        <div className="pt-2 border-t border-stone-100 flex items-center justify-between gap-2">
           <div>
             <div className="flex items-baseline gap-1.5">
-              <span className="font-serif font-bold text-[#1A1A1A] text-base">
+              <span className="font-bold text-[#2E2A25] text-base">
                 {formatPrice(product.priceCents)}
               </span>
               {product.compareAtPriceCents && (
-                <span className="text-xs text-[#8E8C82] line-through">
+                <span className="text-xs text-stone-400 line-through">
                   {formatPrice(product.compareAtPriceCents)}
                 </span>
               )}
             </div>
-            <p className="text-[9px] text-[#8E8C82] font-medium uppercase tracking-wider">Artisan Direct Price</p>
+            <p className="text-[10px] text-[#5F7464] font-semibold">FREE shipping</p>
           </div>
 
           <button
             onClick={(e) => onQuickAddToCart(product, e)}
-            className="px-3.5 py-1.5 bg-[#1A1A1A] hover:bg-[#8B4513] text-white text-[10px] font-bold uppercase tracking-widest transition-colors shadow-xs cursor-pointer flex items-center gap-1"
+            className="px-3 py-1.5 bg-[#2E2A25] hover:bg-[#C85A32] text-white text-xs font-semibold rounded-full transition-colors cursor-pointer"
           >
             {product.isCustomizable ? 'Customize' : '+ Add'}
           </button>
@@ -120,4 +128,5 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </div>
   );
 };
+
 

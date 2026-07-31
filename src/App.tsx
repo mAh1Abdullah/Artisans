@@ -8,6 +8,8 @@ import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
+import { VendorShopView } from './components/VendorShopView';
+import { EtsyCuratedSections } from './components/EtsyCuratedSections';
 import { RawMaterialsPage } from './components/RawMaterialsPage';
 import { SellerSignupPage } from './components/SellerSignupPage';
 import { BuyerProfileView } from './components/BuyerProfileView';
@@ -34,9 +36,16 @@ export default function App() {
   const [settlements, setSettlements] = useState<VendorSettlement[]>(() => storageService.getSettlements());
 
   // UI View & Navigation State
-  const [activeView, setActiveView] = useState<string>('explore'); // 'explore' | 'raw_materials' | 'seller_signup' | 'buyer_profile' | 'seller_dashboard'
+  const [activeView, setActiveView] = useState<string>('explore'); // 'explore' | 'raw_materials' | 'seller_signup' | 'buyer_profile' | 'seller_dashboard' | 'vendor_shop'
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
+
+  const handleSelectVendor = (vendorId: string) => {
+    setSelectedVendorId(vendorId);
+    setActiveView('vendor_shop');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Modals & Drawers
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -248,6 +257,19 @@ export default function App() {
             }}
             onOpenRawMaterials={() => setActiveView('raw_materials')}
             onOpenAdvisor={() => setAdvisorModalOpen(true)}
+            onSelectCategory={(catId) => setActiveCategory(catId)}
+          />
+
+          {/* Curated Etsy-Style Sections (Home Improvement, Local Shops, Birthday Gifts) */}
+          <EtsyCuratedSections
+            onSelectVendor={handleSelectVendor}
+            onSelectProduct={(p) => setSelectedProduct(p)}
+            onExploreCrafts={() => {
+              const el = document.getElementById('handcrafted-catalog');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            products={products}
+            vendors={vendors}
           />
 
           {/* Main Handcrafted Catalog */}
@@ -268,6 +290,36 @@ export default function App() {
                   Multi-Vendor Marketplace
                 </span>
               </div>
+            </div>
+
+            {/* Category Filter Pills Section */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 pt-1 border-b border-[#2E2A25]/15">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#C85A32] shrink-0 mr-1 flex items-center gap-1">
+                <Layers className="w-3.5 h-3.5 text-[#C85A32]" /> Categories:
+              </span>
+              {[
+                { id: 'all', label: 'All Crafts' },
+                { id: 'pottery', label: 'Pottery & Clay' },
+                { id: 'textiles', label: 'Jamdani & Textiles' },
+                { id: 'woodwork', label: 'Teak & Woodcraft' },
+                { id: 'glass_resin', label: 'Resin & Botanical' },
+                { id: 'jewelry', label: 'Silver & Metalsmith' },
+                { id: 'paintings', label: 'Rickshaw & Folk Art' },
+                { id: 'leatherwork', label: 'Heritage Leather' },
+                { id: 'custom_gifts', label: 'Bespoke Keepsakes' }
+              ].map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    activeCategory === cat.id
+                      ? 'bg-[#C85A32] text-white shadow-xs'
+                      : 'bg-[#F4EBE1] text-[#2E2A25] hover:bg-stone-200 border border-[#2E2A25]/10'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
             </div>
 
             {/* Product Grid */}
@@ -293,6 +345,7 @@ export default function App() {
                     onToggleWishlist={handleToggleWishlist}
                     onSelectProduct={(p) => setSelectedProduct(p)}
                     onQuickAddToCart={handleQuickAddToCart}
+                    onSelectVendor={handleSelectVendor}
                   />
                 ))}
               </div>
@@ -398,6 +451,29 @@ export default function App() {
         </main>
       )}
 
+      {/* VIEW 8: VENDOR / SAMPLE SHOP PAGE */}
+      {activeView === 'vendor_shop' && (
+        <main className="flex-1">
+          {(() => {
+            const currentVendor = vendors.find(v => v.id === selectedVendorId) || vendors[0];
+            return (
+              <VendorShopView
+                vendor={currentVendor}
+                products={products}
+                reviews={reviews}
+                wishlist={wishlist}
+                onToggleWishlist={handleToggleWishlist}
+                onSelectProduct={(p) => setSelectedProduct(p)}
+                onQuickAddToCart={handleQuickAddToCart}
+                onOpenAdvisor={() => setAdvisorModalOpen(true)}
+                onBack={() => setActiveView('explore')}
+                onShowToast={(title, msg, type) => showToast(title, msg, type)}
+              />
+            );
+          })()}
+        </main>
+      )}
+
       {/* MODAL: Product Detail & Customization View */}
       {selectedProduct && (
         <ProductDetailModal
@@ -408,6 +484,7 @@ export default function App() {
           onToggleWishlist={(id) => handleToggleWishlist(id)}
           onAddToCart={handleAddToCart}
           onAddReview={handleAddReview}
+          onSelectVendor={handleSelectVendor}
         />
       )}
 

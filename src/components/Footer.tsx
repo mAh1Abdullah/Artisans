@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store } from 'lucide-react';
+import { Store, Globe, HelpCircle } from 'lucide-react';
 
 interface FooterProps {
   onApplySeller: () => void;
@@ -8,88 +8,98 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onApplySeller, onOpenRawMaterials }) => {
   return (
-    <footer className="bg-[#1A1A1A] text-[#FAF9F6] border-t border-[#2A2A2A] pt-14 pb-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        {/* Top Callout Banner */}
-        <div className="p-8 rounded-tl-[32px] rounded-br-[32px] bg-[#222222] border border-[#333333] flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="space-y-1.5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8B4513]">Partner With Us</p>
-            <h3 className="font-serif italic text-xl sm:text-2xl font-bold">Are you an Artist or Wholesale Material Supplier?</h3>
-            <p className="text-xs text-[#9E9C96]">List your handcrafted products or wholesale raw craft supplies to conscious buyers nationwide.</p>
-          </div>
-          <div className="flex gap-3 shrink-0">
+    <footer className="bg-[#2E2A25] text-white border-t border-[#2E2A25]/20">
+      
+      {/* What is Artisans Market Section (Etsy signature banner) */}
+      <div className="bg-[#3D3832] py-10 px-4 sm:px-6 lg:px-8 text-center text-white">
+        <div className="max-w-4xl mx-auto space-y-3">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight">
+            What is Artisans Market?
+          </h2>
+          <p className="text-xs sm:text-sm text-[#F4EBE1]/90 leading-relaxed max-w-2xl mx-auto">
+            Artisans Market is a global online marketplace, where people come together to make, sell, buy, and collect unique handcrafted items, heritage textiles, and raw craft supplies.
+          </p>
+          <div className="pt-2 flex justify-center gap-3">
             <button
               onClick={onApplySeller}
-              className="px-5 py-3 bg-[#8B4513] hover:bg-[#72370f] text-white text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+              className="px-5 py-2.5 bg-[#C85A32] hover:bg-[#A84825] text-white text-xs font-bold rounded-full transition-colors cursor-pointer shadow-xs"
             >
-              Apply as Seller
+              Sell on Artisans Market
             </button>
             <button
               onClick={onOpenRawMaterials}
-              className="px-5 py-3 border border-white/30 hover:border-white text-white text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+              className="px-5 py-2.5 bg-[#2E2A25] hover:bg-stone-800 text-[#F4EBE1] text-xs font-semibold rounded-full border border-[#F4EBE1]/30 transition-colors cursor-pointer"
             >
-              Wholesale Hub
+              Wholesale Supplies
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Footer Navigation Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 text-xs">
+      {/* Main Etsy Footer Links */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-xs text-stone-300">
+          
           <div className="space-y-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-[#8B4513] text-white flex items-center justify-center font-bold">
-                <Store className="w-3.5 h-3.5" />
-              </div>
-              <span className="font-serif italic font-bold text-lg text-white">Artisans Market</span>
-            </div>
-            <p className="text-[#8E8C82] text-xs leading-relaxed">
-              Multi-vendor marketplace empowering independent master artisans, custom crafted commissions, and wholesale raw materials.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h4 className="font-bold text-white uppercase text-[10px] tracking-[0.2em] text-[#8B4513]">Craft Collections</h4>
-            <ul className="space-y-1.5 text-[#8E8C82] text-xs">
-              <li>Terracotta & Clay Pottery</li>
-              <li>Hand-Carved Teak Wood</li>
-              <li>UNESCO Royal Jamdani Saree</li>
-              <li>Botanical Resin Clocks</li>
-              <li>Brass Metalsmithing</li>
+            <h4 className="font-bold text-white text-sm">Shop</h4>
+            <ul className="space-y-2">
+              <li><a href="#handcrafted-catalog" className="hover:underline">Gift Cards</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Pottery & Clay</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Jamdani Sarees</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Teak Woodcraft</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Custom Engravings</a></li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-bold text-white uppercase text-[10px] tracking-[0.2em] text-[#8B4513]">Wholesale Raw Supply</h4>
-            <ul className="space-y-1.5 text-[#8E8C82] text-xs">
-              <li>Earthenware Clay Powder</li>
-              <li>Seasoned Teak Timber Planks</li>
-              <li>Mulberry Silk Yarns</li>
-              <li>Brass & Copper Craft Sheets</li>
-              <li>Natural Indigo Dyes</li>
+            <h4 className="font-bold text-white text-sm">Sell</h4>
+            <ul className="space-y-2">
+              <li><button onClick={onApplySeller} className="hover:underline text-left">Sell on Artisans Market</button></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Teams & Guilds</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Seller Handbook</a></li>
+              <li><button onClick={onOpenRawMaterials} className="hover:underline text-left">Wholesale Sourcing</button></li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-bold text-white uppercase text-[10px] tracking-[0.2em] text-[#8B4513]">Assurance</h4>
-            <ul className="space-y-1.5 text-[#8E8C82] text-xs">
-              <li>Verified CUID2 Purchase Receipts</li>
-              <li>Cash on Delivery & Mobile Wallet</li>
-              <li>Direct Artisan Pricing Model</li>
-              <li>Nationwide Express Shipping</li>
+            <h4 className="font-bold text-white text-sm">About</h4>
+            <ul className="space-y-2">
+              <li><a href="#handcrafted-catalog" className="hover:underline">Artisans Market, Inc.</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Policies & Direct Commerce</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Artisan Impact & Sustainability</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Investor Relations</a></li>
             </ul>
           </div>
+
+          <div className="space-y-3">
+            <h4 className="font-bold text-white text-sm">Help & Assurance</h4>
+            <ul className="space-y-2">
+              <li><a href="#handcrafted-catalog" className="hover:underline">Help Center & FAQ</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Privacy Settings</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">Buyer Protection Guarantee</a></li>
+              <li><a href="#handcrafted-catalog" className="hover:underline">CUID2 Verification System</a></li>
+            </ul>
+          </div>
+
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[#2A2A2A] flex flex-col sm:flex-row items-center justify-between text-[10px] text-[#8E8C82] font-medium tracking-wider uppercase gap-3">
-          <p>© 2026 Artisans Market. Handcrafted Arts & Wholesale Supply.</p>
-          <div className="flex items-center gap-1">
-            <span>Direct Artisan Trade • Conscious Craftsmanship</span>
+        {/* Etsy Bottom Currency & Copyright Bar */}
+        <div className="mt-12 pt-8 border-t border-stone-700 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-400 gap-4">
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5 font-semibold text-white bg-stone-800 px-3 py-1 rounded-full border border-stone-700">
+              <Globe className="w-3.5 h-3.5 text-[#C85A32]" />
+              Bangladesh | BDT (৳)
+            </span>
           </div>
+
+          <p className="text-center sm:text-right text-stone-400 text-[11px]">
+            © 2026 Artisans Market, Inc. All rights reserved. • <span className="underline hover:text-white cursor-pointer">Terms of Use</span> • <span className="underline hover:text-white cursor-pointer">Privacy</span>
+          </p>
         </div>
       </div>
+
     </footer>
   );
 };
+
 

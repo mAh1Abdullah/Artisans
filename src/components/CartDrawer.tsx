@@ -32,10 +32,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
       <div className="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between text-stone-800 animate-in slide-in-from-right duration-300">
         
         {/* Cart Drawer Header */}
-        <div className="p-4 sm:p-5 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+        <div className="p-4 sm:p-5 border-b border-[#2E2A25]/15 flex items-center justify-between bg-[#F4EBE1]">
           <div className="flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-amber-900" />
-            <h2 className="font-serif text-lg font-bold text-stone-900">Your Craft Cart ({cart.length})</h2>
+            <ShoppingBag className="w-5 h-5 text-[#C85A32]" />
+            <h2 className="font-serif text-lg font-bold text-[#2E2A25]">Your Craft Cart ({cart.length})</h2>
           </div>
           <button
             onClick={onClose}
@@ -140,33 +140,33 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
         {/* Cart Drawer Footer */}
         {cart.length > 0 && (
-          <div className="p-4 sm:p-5 border-t border-stone-200 bg-stone-50 space-y-3">
+          <div className="p-4 sm:p-5 border-t border-[#2E2A25]/15 bg-[#F4EBE1] space-y-3">
             <div className="space-y-1 text-xs">
-              <div className="flex justify-between text-stone-600">
+              <div className="flex justify-between text-[#2E2A25]/80">
                 <span>Items Subtotal</span>
-                <span className="font-semibold text-stone-900">{formatPrice(subtotalCents)}</span>
+                <span className="font-semibold text-[#2E2A25]">{formatPrice(subtotalCents)}</span>
               </div>
-              <div className="flex justify-between text-stone-600">
+              <div className="flex justify-between text-[#2E2A25]/80">
                 <span>Estimated Courier Delivery</span>
-                <span className="text-emerald-800 font-medium">Calculated at checkout</span>
+                <span className="text-[#5F7464] font-medium">Calculated at checkout</span>
               </div>
-              <div className="flex justify-between text-stone-900 font-bold text-sm pt-2 border-t border-stone-200">
+              <div className="flex justify-between text-[#2E2A25] font-bold text-sm pt-2 border-t border-[#2E2A25]/15">
                 <span>Total Amount</span>
-                <span className="font-serif text-amber-950 text-base">{formatPrice(subtotalCents)}</span>
+                <span className="font-serif text-[#C85A32] text-base">{formatPrice(subtotalCents)}</span>
               </div>
             </div>
 
             <button
               onClick={onProceedToCheckout}
-              className="w-full py-3.5 bg-amber-950 hover:bg-amber-900 text-amber-100 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-950/20 transition-all cursor-pointer"
+              className="w-full py-3.5 bg-[#C85A32] hover:bg-[#A84825] text-white rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
             >
               <span>Proceed to Checkout</span>
-              <ArrowRight className="w-4 h-4 text-amber-400" />
+              <ArrowRight className="w-4 h-4 text-white" />
             </button>
 
             <div className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500 pt-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-800" />
-              <span>Immutable CUID2 Order Snapshots • Cash on Delivery & bKash</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-[#5F7464]" />
+              <span>Immutable Order Snapshots • Cash on Delivery & bKash</span>
             </div>
           </div>
         )}
